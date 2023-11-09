@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { memo } from 'react';
 
 
-const LandingPage = () => {
+const LandingPage = memo(() => {
 
 
   return(
@@ -9,7 +9,7 @@ const LandingPage = () => {
       Mtavariaaaa
     </div>
   )
-}
+})
 
 
 export default LandingPage

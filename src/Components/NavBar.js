@@ -1,30 +1,56 @@
-import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { memo, useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {signOut} from 'firebase/auth'
 import {auth} from "../config/firebase"
-import { setUserId } from '../Redux/Slices/logedUserSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { setDisplayName } from '../Redux/Slices/logedUserSlice';
 
-const NavBar = () => {
+const NavBar = memo(() => {
   const dispatch = useDispatch()
-  const {userId} = useSelector(state => state.logedUserSlice)
+
+  const {isLoged , displayName , profilePictureLoading} = useSelector(state => state.logedUserSlice)
+  
 
   const logOut = async() => {
     try{
       await signOut(auth)
-      dispatch(setUserId(''))
-
     }catch(err){
       console.error(err)
     }
     
   }
 
+
+  useEffect(()=>{
+    if(auth.currentUser?.displayName != ''){
+      dispatch(setDisplayName(auth.currentUser?.displayName))
+    }
+  },[dispatch , auth.currentUser?.displayName])
+
+  
+  
+
   return(
-    <div className='bg-blue-300'>
+    <div className='bg-blue-300 flex justify-end'>
    
-      {userId ? 
-        <button onClick={logOut}>Log Out</button>
+      {isLoged ? 
+        <div className='flex gap-[50px]'>
+          <div className='flex justify-center items-center'>
+            <NavLink to='Profile'>
+              <div className=' rounded-[50%] overflow-hidden w-[70px] h-[70px] border border-black'>
+                {profilePictureLoading ? 
+                  <div>Loadinggggggg </div>
+                :
+                  <img src={auth.currentUser.photoURL}/>
+                }
+            
+              </div>
+            </NavLink>   
+            <div>{displayName}</div>
+          </div>
+          <button onClick={logOut}>Log Out</button>
+        </div>
+       
         :
         <>
           <NavLink to='Login'>  <button>Log In</button> </NavLink>   
@@ -39,7 +65,7 @@ const NavBar = () => {
       
     </div>
   )
-}
+})
 
 
 export default NavBar

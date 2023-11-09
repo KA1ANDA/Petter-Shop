@@ -1,16 +1,32 @@
 import { initializeApp } from "firebase/app";
 import {GoogleAuthProvider, getAuth} from "firebase/auth"
+import {getStorage} from "firebase/storage"
+import {collection, getDocs, getFirestore, query, where} from "firebase/firestore"
+
+
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAf8YRG47JXs7zVWzrkV8VjLmSOm3PrTgE",
-  authDomain: "petter-web-3a633.firebaseapp.com",
-  projectId: "petter-web-3a633",
-  storageBucket: "petter-web-3a633.appspot.com",
-  messagingSenderId: "44388801007",
-  appId: "1:44388801007:web:05044224837338d6b8be1a"
+  apiKey: "AIzaSyAXl2iQQmedWYtNYi-8DN_mmBaOK6h7fgU",
+  authDomain: "petter-web-9b820.firebaseapp.com",
+  projectId: "petter-web-9b820",
+  storageBucket: "petter-web-9b820.appspot.com",
+  messagingSenderId: "422046603519",
+  appId: "1:422046603519:web:616fab67de7dcde66854ca"
 };
 
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app)
 export const googleProvider = new GoogleAuthProvider()
+export const storage = getStorage(app)
+export const db = getFirestore(app)
+
+
+
+
+
+
+
+
+
+
