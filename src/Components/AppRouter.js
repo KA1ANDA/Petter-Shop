@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import SignIn from '../Pages/Authentication/SignIn';
 import Registration from '../Pages/Authentication/Registration';
 import ProfilePage from '../Pages/ProfilePage';
+import ServicesPage from '../Pages/ServicesPage';
 
 
 
@@ -23,6 +24,7 @@ const AppRouter = memo(() => {
       <Route path='/Login' element={<Navigate to='/Home' />}/>   
       <Route path='/Registration' element={<Navigate to='/Home' />}/>   
       <Route path='/Profile' element={<ProfilePage/>}/>   
+      <Route path='/Services' element={<ServicesPage />}/>   
     </Routes>
   )
   :
@@ -32,7 +34,8 @@ const AppRouter = memo(() => {
       <Route path='/' element={<Navigate to='Home' />}/>   
       <Route path='/Home' element={<LandingPage/>}/>   
       <Route path='/Login' element={<SignIn />}/>   
-      <Route path='/Registration' element={<Registration />}/>   
+      <Route path='/Registration' element={<Registration />}/>  
+      <Route path='/Services' element={<ServicesPage />}/>   
     </Routes>
 
   )

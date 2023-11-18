@@ -1,10 +1,10 @@
-import React, {memo, useEffect, useState } from 'react';
-import {auth , db, googleProvider} from "../../config/firebase"
-import {createUserWithEmailAndPassword , signInWithPopup , updateProfile} from "firebase/auth"
-import { useNavigate } from 'react-router-dom';
+import React, {memo, useState } from 'react';
+import {auth , db} from "../../config/firebase"
+import {createUserWithEmailAndPassword  , updateProfile} from "firebase/auth"
 import { useDispatch, useSelector } from 'react-redux';
 import { setChooseActivityToggle, setDisplayName } from '../../Redux/Slices/logedUserSlice';
-import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { addDoc, collection } from 'firebase/firestore';
+import useGoogleAuth from '../../Hooks/useGoogleAuth';
 
 
  export const addUserToDb = async(displayName=auth.currentUser.displayName) => {
@@ -25,8 +25,8 @@ import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
 }
 
 const Registration = memo(() => {
-  const navigate = useNavigate();
   const dispatch = useDispatch()
+  const googleAuth = useGoogleAuth()
   
   const [email , setEmail] = useState('')
   const [password , setPassword] = useState('')
@@ -49,31 +49,21 @@ const Registration = memo(() => {
         })
 
         const displayName = `${name} ${lastName}`
-        addUserToDb(displayName)
+        
+        const filtredUser = users.filter((user)=>user.id === auth.currentUser.uid)
+        if (filtredUser.length == 0) {
+          addUserToDb(displayName);
+          dispatch(setChooseActivityToggle(true));
+          console.log('sheiqmna');
+        } else {
+          console.log('User with the given email already exists');
+        }
 
     }catch(err){
       console.error(err)
     }
   }
 
-  const singInWithGoogle = async() => {
-    try{
-      await signInWithPopup(auth , googleProvider)
-
-      const filtredUser = users.filter((user)=>user.id === auth.currentUser.uid)
-      if (filtredUser.length == 0) {
-        addUserToDb();
-        dispatch(setChooseActivityToggle(true))
-        console.log('sheiqmna');
-      } else {
-        console.log('User with the given email already exists');
-      }
-
-      navigate('/Home')
-    }catch(err){
-      console.error(err)
-    }
-  }
 
 
 
@@ -105,7 +95,7 @@ const Registration = memo(() => {
 
        
         <button onClick={singUp}>Register</button>
-        <button onClick={singInWithGoogle}>Sing In With Google</button>
+        <button onClick={googleAuth}>Sing In With Google</button>
 
       </div>
   )

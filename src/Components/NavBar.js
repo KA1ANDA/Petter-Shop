@@ -4,9 +4,11 @@ import {signOut} from 'firebase/auth'
 import {auth} from "../config/firebase"
 import { useDispatch, useSelector } from 'react-redux';
 import { setDisplayName } from '../Redux/Slices/logedUserSlice';
+import { setSelectedService } from '../Redux/Slices/servicesSlice';
 
 const NavBar = memo(() => {
   const dispatch = useDispatch()
+  
 
   const {isLoged , displayName , profilePictureLoading} = useSelector(state => state.logedUserSlice)
   
@@ -31,10 +33,22 @@ const NavBar = memo(() => {
   
 
   return(
-    <div className='bg-blue-300 flex justify-end'>
+    <div className='bg-blue-300 flex justify-between items-center '>
+      <NavLink to='/Home'>
+        PETTER
+      </NavLink>
+       
+   
+
+      <ul className='flex gap-[80px]'>
+        <li><NavLink to='/Home'>Home</NavLink></li>
+        <li><NavLink to='/Services' onClick={()=>dispatch(setSelectedService(null))}>Services</NavLink></li>
+        <li>Shop</li>
+        <li>About</li>
+      </ul>
    
       {isLoged ? 
-        <div className='flex gap-[50px]'>
+        <div className='flex gap-[50px] '>
           <div className='flex justify-center items-center'>
             <NavLink to='Profile'>
               <div className=' rounded-[50%] overflow-hidden w-[70px] h-[70px] border border-black'>

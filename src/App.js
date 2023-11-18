@@ -49,7 +49,7 @@ function App() {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-col bg-green-300 h-[100vh]">
+    <div className="flex flex-col bg-green-300 h-[100vh] px-[275px]">
       <NavBar/>
       <AppRouter />
       {chooseActivityToggle && (

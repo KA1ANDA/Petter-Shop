@@ -1,19 +1,18 @@
-import React, {memo, useEffect, useState } from 'react';
-import {auth , googleProvider} from "../../config/firebase"
-import {signInWithEmailAndPassword , signInWithPopup} from "firebase/auth"
+import React, {memo, useState } from 'react';
+import {auth} from "../../config/firebase"
+import {signInWithEmailAndPassword } from "firebase/auth"
 import { useNavigate } from 'react-router-dom';
-import { addUserToDb } from './Registration';
-import { useSelector } from 'react-redux';
+import useGoogleAuth from '../../Hooks/useGoogleAuth';
 
 
 
 
 const SignIn = memo(() => {
   const navigate = useNavigate();
+  const googleAuth = useGoogleAuth()
   
   const [email , setEmail] = useState('')
   const [password , setPassword] = useState('')
-  const {users} = useSelector((state) => state.logedUserSlice)
 
 
 
@@ -22,24 +21,6 @@ const SignIn = memo(() => {
       await signInWithEmailAndPassword(auth , email , password)
       navigate('/Home')
 
-    }catch(err){
-      console.error(err)
-    }
-  }
-
-  const singInWithGoogle = async() => {
-    try{
-      await signInWithPopup(auth , googleProvider)
-      const filtredUser = users.filter((user)=>user.id === auth.currentUser.uid)
-      console.log(filtredUser)
-      if (filtredUser.length == 0) {
-        addUserToDb();
-        console.log('sheiqmna');
-      } else {
-        console.log('User with the given email already exists');
-      }
-      
-     
     }catch(err){
       console.error(err)
     }
@@ -66,7 +47,7 @@ const SignIn = memo(() => {
 
        
         <button onClick={singIn}>Sing In</button>
-        <button onClick={singInWithGoogle}>Sing In With Google</button>
+        <button onClick={googleAuth}>Sing In With Google</button>
       </div>
   )
 })
