@@ -1,19 +1,33 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect } from 'react';
 import useGetServices from '../Hooks/useGetServices';
 import { FaArrowRight } from "react-icons/fa";
-import { useDispatch } from 'react-redux';
-import { setSelectedService } from '../Redux/Slices/servicesSlice';
-import { NavLink } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSelectedService , setCurrentServiceURL, setServicesPage } from '../Redux/Slices/servicesSlice';
+import { NavLink, useParams } from 'react-router-dom';
 
 const Services = memo(() => {
   const dispatch = useDispatch()
-  
+
   const servicesData = useGetServices()
+
   
 
-  const setService = (id) => {
+  const setService = (id , name) => {
     dispatch(setSelectedService(id))
+    const str = name;
+    const newStr = str.replaceAll(" ", "");
+    dispatch(setCurrentServiceURL(newStr))
+    
   }
+
+  useEffect(() => {
+  
+    localStorage.setItem('currentServiceId', ''); 
+    
+  },[])
+
+
+
 
   return(
     <div>
@@ -23,7 +37,7 @@ const Services = memo(() => {
       </div>
       <div className=' grid grid-cols-3 w-fit gap-[40px] m-auto'>
         {servicesData.map(el =>
-        <div className='flex flex-col bg-white border border-black w-[430px] p-[40px] gap-[15px] rounded-[8px]'>
+        <div key={el.id} className='flex flex-col bg-white border border-black w-[430px] p-[40px] gap-[15px] rounded-[8px]'>
           <div className='flex items-center gap-[20px]'>
             <img src={el.photoURL}/>
             <div>{el.service}</div>
@@ -34,8 +48,9 @@ const Services = memo(() => {
 
           
           <div className='flex items-center gap-[5px]'>
-            {/* <NavLink to='/Services' onClick={()=>setService(el.id)}>Get Service</NavLink> */}
-          <div onClick={()=>setService(el.id)}>Get Service</div>
+            <NavLink to={`/Services/${el.service.replaceAll(" ", "")}/${el.id}`} onClick={()=>setService(el.id , el.service)}>Get Service</NavLink>
+
+          {/* <div onClick={()=>setService(el.id , el.service)}>Get Service</div> */}
           <FaArrowRight />
           </div>
 

@@ -34,15 +34,14 @@ const NavBar = memo(() => {
 
   return(
     <div className='bg-blue-300 flex justify-between items-center '>
-      <NavLink to='/Home'>
+      <NavLink to='/'>
         PETTER
       </NavLink>
        
-   
 
       <ul className='flex gap-[80px]'>
-        <li><NavLink to='/Home'>Home</NavLink></li>
-        <li><NavLink to='/Services' onClick={()=>dispatch(setSelectedService(null))}>Services</NavLink></li>
+        <li><NavLink to='/'>Home</NavLink></li>
+        <li><NavLink to='/Services'>Services</NavLink></li>
         <li>Shop</li>
         <li>About</li>
       </ul>

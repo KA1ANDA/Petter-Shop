@@ -19,7 +19,7 @@ const SignIn = memo(() => {
   const singIn = async() => {
     try{
       await signInWithEmailAndPassword(auth , email , password)
-      navigate('/Home')
+      navigate('/')
 
     }catch(err){
       console.error(err)

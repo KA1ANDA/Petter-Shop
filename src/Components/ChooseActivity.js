@@ -39,12 +39,53 @@ const ChooseActivity = memo(() => {
 
   const setActivity = (el) => {
     if(wantToBeEmployed){
-      updateDoc(docRef, { activity:el});
+      updateDoc(docRef, { 
+        activity:el,
+        about:'',
+        location:'',
+        phoneNumber:null,
+        readyToWork:false,
+        salary: {
+          thirtyMin:null,
+          fortyfiveMin:null,
+          hour:null,
+        },
+        workDates: [
+          {
+            name:'Monday',
+            isFree:false,
+          },
+          {
+            name:'Tuesday',
+            isFree:false,
+          },
+          {
+            name:'Wednesday',
+            isFree:false,
+          },
+          {
+            name:'Thursday',
+            isFree:false,
+          },
+          {
+            name:'Friday',
+            isFree:false,
+          },
+          {
+            name:'Saturday',
+            isFree:false,
+          },
+          {
+            name:'Sunday',
+            isFree:false,
+          }
+        ]
+      });
     }else{
       updateDoc(docRef, {activity:'searching'}) 
     }
     dispatch(setChooseActivityToggle(false))
-    navigate('/Home')
+    navigate('/')
   }
 
   console.log(servicesData)

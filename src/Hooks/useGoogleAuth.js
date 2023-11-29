@@ -26,7 +26,7 @@ const useGoogleAuth = () => {
         console.log('User with the given email already exists');
       }
       
-      navigate('/Home')
+      navigate('/');
     }catch(err){
       console.error(err)
     }

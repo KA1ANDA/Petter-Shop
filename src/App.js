@@ -47,9 +47,10 @@ function App() {
   
     return () => unsubscribe(); // Cleanup listener on unmount
   }, [dispatch]);
+  
 
   return (
-    <div className="flex flex-col bg-green-300 h-[100vh] px-[275px]">
+    <div className="flex flex-col bg-green-300 h-[100%] px-[275px]">
       <NavBar/>
       <AppRouter />
       {chooseActivityToggle && (

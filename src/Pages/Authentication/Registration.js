@@ -1,10 +1,11 @@
-import React, {memo, useState } from 'react';
+import React, {memo, useEffect, useState } from 'react';
 import {auth , db} from "../../config/firebase"
 import {createUserWithEmailAndPassword  , updateProfile} from "firebase/auth"
 import { useDispatch, useSelector } from 'react-redux';
 import { setChooseActivityToggle, setDisplayName } from '../../Redux/Slices/logedUserSlice';
 import { addDoc, collection } from 'firebase/firestore';
 import useGoogleAuth from '../../Hooks/useGoogleAuth';
+
 
 
  export const addUserToDb = async(displayName=auth.currentUser.displayName) => {
@@ -16,7 +17,7 @@ import useGoogleAuth from '../../Hooks/useGoogleAuth';
       displayName,
       email:auth.currentUser.email,
       photo:auth.currentUser.photoURL,
-      activity:""
+      activity:"",
     })
   }catch(err){
     console.error(err)
@@ -34,6 +35,7 @@ const Registration = memo(() => {
   const [lastName , setLastName] =  useState('')
 
   const {users} = useSelector((state) => state.logedUserSlice)
+
 
 
 
@@ -65,6 +67,8 @@ const Registration = memo(() => {
   }
 
 
+
+  
 
 
   return(

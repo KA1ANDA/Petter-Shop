@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getDocs, query, where, collection } from 'firebase/firestore';
+import { getDocs, query, where, collection, updateDoc } from 'firebase/firestore';
 import { auth, db } from '../config/firebase';
 
 const useUserDocRef = () => {
