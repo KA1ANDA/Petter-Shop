@@ -1,109 +1,131 @@
-import React, {memo, useEffect, useState } from 'react';
-import {auth , db} from "../../config/firebase"
-import {createUserWithEmailAndPassword  , updateProfile} from "firebase/auth"
+import React, { memo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setChooseActivityToggle, setDisplayName } from '../../Redux/Slices/logedUserSlice';
-import { addDoc, collection } from 'firebase/firestore';
+import { createUserWithEmailAndPassword, updateProfile, sendEmailVerification, signOut } from 'firebase/auth';
+import { auth } from '../../config/firebase';
+import { setChooseActivityToggle, setLogInToggle, setRegistrationToggle } from '../../Redux/Slices/logedUserSlice';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import useGoogleAuth from '../../Hooks/useGoogleAuth';
+import ForgotPassword from './ForgotPassword';
+import { RxCross1 } from 'react-icons/rx';
 
-
-
- export const addUserToDb = async(displayName=auth.currentUser.displayName) => {
-
-  try{
-   
-    await addDoc(collection(db, "users"), {
-      id:auth.currentUser.uid,
-      displayName,
-      email:auth.currentUser.email,
-      photo:auth.currentUser.photoURL,
-      activity:"",
-    })
-  }catch(err){
-    console.error(err)
-  }
-  
-}
+const validationSchema = yup.object().shape({
+  email: yup.string().email('Invalid email address').required('Email is required'),
+  password: yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
+});
 
 const Registration = memo(() => {
-  const dispatch = useDispatch()
-  const googleAuth = useGoogleAuth()
-  
-  const [email , setEmail] = useState('')
-  const [password , setPassword] = useState('')
-  const [name , setName] =  useState('')
-  const [lastName , setLastName] =  useState('')
+  const dispatch = useDispatch();
+  const googleAuth = useGoogleAuth();
+  const { registrationToggle } = useSelector((state) => state.logedUserSlice);
+  const [loading, setLoading] = useState(false);
+  const [registrationError, setRegistrationError] = useState('');
 
-  const {users} = useSelector((state) => state.logedUserSlice)
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values) => {
+      const { email, password } = values;
+      try {
+        setLoading(true);
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
 
+        // Send email verification
+        await sendEmailVerification(user);
+        alert('Email verification link sent. Please check your email.');
 
+        // Update user profile
+        await updateProfile(user, { displayName: email.split('@')[0] });
 
-
-  
-
-
-  const singUp = async() => {
-    try{
-        await createUserWithEmailAndPassword(auth , email , password).then((result) => {
-        const user = result.user;
-        updateProfile(user, {displayName: `${name} ${lastName}` })
-        dispatch(setDisplayName(`${name} ${lastName}`))
-        })
-
-        const displayName = `${name} ${lastName}`
-        
-        const filtredUser = users.filter((user)=>user.id === auth.currentUser.uid)
-        if (filtredUser.length == 0) {
-          addUserToDb(displayName);
+        // Check if the email is verified before setting choose activity toggle
+        if (user.emailVerified) {
           dispatch(setChooseActivityToggle(true));
-          console.log('sheiqmna');
+          console.log('Updated Firestore document and set choose activity toggle');
         } else {
-          console.log('User with the given email already exists');
+          alert('Please verify your email before logging in.');
+          // Handle email verification state accordingly
         }
+      } catch (error) {
+        if (error.code === 'auth/email-already-in-use') {
+          setRegistrationError('This email is already registered.');
+        } else {
+          console.error('Registration error:', error.message);
+          setRegistrationError('Registration failed. Please try again.');
+        }
+      } finally {
+        setLoading(false); // Reset loading state
+      }
+    },
+  });
 
-    }catch(err){
-      console.error(err)
-    }
-  }
+  return (
+    <div className='fixed top-0 bottom-0 left-0 right-0 bg-[rgba(9,9,9,0.82)] overflow-hidden flex justify-center items-center'>
+      <div className='flex flex-col gap-[30px] p-[50px] rounded-standart w-[500px] bg-white'>
+        <div onClick={() => dispatch(setRegistrationToggle(false))} className='self-end text-h4 cursor-pointer'>
+          <RxCross1 />
+        </div>
+        <div className='text-center text-h2 font-extrabold'>Registration</div>
 
+        <form onSubmit={formik.handleSubmit} className='flex flex-col gap-[40px]'>
 
+          <div className='flex flex-col gap-[10px]'>
+            <input
+              type='text'
+              placeholder='Write Your Email'
+              name='email'
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={`signInInput ${
+                formik.touched.email && formik.errors.email ? 'invalidInput' : ''
+              }`}
+            />
+            {formik.touched.email && formik.errors.email && (
+              <div className='text-[red]'>{formik.errors.email}</div>
+            )}
 
-  
+            <input
+              type='password'
+              placeholder='Write Your Password'
+              name='password'
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={`signInInput ${
+                formik.touched.password && formik.errors.password ? 'invalidInput' : ''
+              }`}
+            />
+            {formik.touched.password && formik.errors.password && (
+              <div className='text-[red]'>{formik.errors.password}</div>
+            )}
 
+            {registrationError && <div className='text-[red]'>{registrationError}</div>}
 
-  return(
-   
-      <div className='flex flex-col gap-[20px] bg-red-300  m-auto'>
-        <div>Registration</div>
-        <input
-         type='text'
-         placeholder='Name'
-         onChange={(e)=>setName(e.target.value)}
-         />
-         <input
-         type='text'
-         placeholder='Lastname'
-         onChange={(e)=>setLastName(e.target.value)}
-         />
-        <input
-         type='text'
-         placeholder='Write Your EmaiL'
-         onChange={(e)=>setEmail(e.target.value)}
-         />
-
-        <input
-         type='password' 
-         placeholder='Write Your Password' 
-         onChange={(e)=>setPassword(e.target.value)}
-         />
-
-       
-        <button onClick={singUp}>Register</button>
-        <button onClick={googleAuth}>Sing In With Google</button>
-
+          </div>
+         
+          <div className='flex flex-col gap-[15px]'>
+            <button
+              type='submit'
+              className='bg-primary signInButton'
+              disabled={!formik.isValid || !formik.dirty || loading}
+            >
+              {loading ? 'Registering...' : 'Register'}
+            </button>
+            <button className='bg-additional signInButton' onClick={googleAuth} disabled={loading}>
+              Sign In With Google
+            </button>
+          </div>
+        </form>
       </div>
-  )
-})
+    </div>
+  );
+});
+
+export default Registration;
 
 
-export default Registration
+

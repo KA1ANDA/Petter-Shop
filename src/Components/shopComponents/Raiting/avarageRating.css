@@ -1,0 +1,15 @@
+.star-rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px; /* Adjust the space between stars */
+}
+
+.star {
+  width: 24px; /* Adjust the size of the stars */
+  height: 24px;
+  fill: #ffd700; /* Color for empty star */
+}
+
+.star.filled {
+  fill: #ffd700; /* Color for filled star */
+}

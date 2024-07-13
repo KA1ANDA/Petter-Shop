@@ -2,6 +2,8 @@ import { collection, getDoc, getDocs, query, where } from 'firebase/firestore';
 import React, { memo, useEffect, useState } from 'react';
 import { db } from '../config/firebase';
 import PersonCard from '../Components/PersonCard';
+import { NavLink } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 
 const DiscoverPeoplePage = memo(() => {
@@ -9,7 +11,10 @@ const DiscoverPeoplePage = memo(() => {
 
   const [usersData, setUsersData] = useState([]);
 
+
   var selectedService = localStorage.getItem("currentServiceName");
+
+
 
 
   useEffect(() => {
@@ -43,6 +48,7 @@ const DiscoverPeoplePage = memo(() => {
     
   // }, [docRef]);
 
+
   return(
     <div className=' bg-amber-200 h-[100%] flex gap-[50px]'>
       
@@ -50,7 +56,10 @@ const DiscoverPeoplePage = memo(() => {
       <div >Loading...</div>
     ) : (
       usersData?.map((user) => (
-        <PersonCard name={user.displayName} about={user.about} photo={user.photo} />
+        <NavLink to={`/Discover/${user.displayName}/${user.id}`}>
+          <PersonCard name={user.displayName} about={user.about} photo={user.photo} userId={user.id} />
+        </NavLink>
+        
       ))
     )}
       

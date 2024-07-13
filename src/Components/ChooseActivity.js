@@ -1,11 +1,14 @@
-import { collection, getDocs, updateDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, updateDoc } from 'firebase/firestore';
 import React, {memo, useEffect, useState} from 'react';
-import { db } from '../config/firebase';
+import { auth, db } from '../config/firebase';
 import useUserDocRef from '../Hooks/useUserDocRef';
 import { useNavigate } from 'react-router-dom';
 import { setChooseActivityToggle } from '../Redux/Slices/logedUserSlice';
 import { useDispatch } from 'react-redux';
 import useGetServices from '../Hooks/useGetServices';
+import { walking } from '../Variables/profileSetUpFormInfo';
+import ProfileSetUpForm from './ProfileSetUpForm';
+import useGetUserInfo from '../Hooks/useGetUserInfo';
 
 
 
@@ -13,89 +16,95 @@ import useGetServices from '../Hooks/useGetServices';
 
 const ChooseActivity = memo(() => {
   const dispatch = useDispatch()
+  
 
   const [wantToBeEmployed , setWantToBeEmployed] = useState(false)
-  // const [servicesData, setServicesData] = useState([]);
+  const [form , setForm] = useState(false)
 
+  const userData = useGetUserInfo()
   const servicesData = useGetServices()
   const navigate = useNavigate();
 
-  const docRef = useUserDocRef();
-  // const ServicesdocRef = collection(db, "services");
+  // const docRef = useUserDocRef();
+ 
+  const userDocRef = doc(db, 'users', auth.currentUser?.uid);
 
 
-
-  // useEffect(() => {
-  //   const fetchServices = async () => {
-  //     const docSnapshots = await getDocs(ServicesdocRef);
-  //     const servicesData = docSnapshots.docs.map((doc) => doc.data());
-  //     setServicesData(servicesData);
-  //   };
   
-  //   fetchServices();
-
-  // }, []);
-
 
   const setActivity = (el) => {
-    if(wantToBeEmployed){
-      updateDoc(docRef, { 
-        activity:el,
-        about:'',
-        location:'',
-        phoneNumber:null,
-        readyToWork:false,
-        salary: {
-          thirtyMin:null,
-          fortyfiveMin:null,
-          hour:null,
-        },
-        workDates: [
-          {
-            name:'Monday',
-            isFree:false,
-          },
-          {
-            name:'Tuesday',
-            isFree:false,
-          },
-          {
-            name:'Wednesday',
-            isFree:false,
-          },
-          {
-            name:'Thursday',
-            isFree:false,
-          },
-          {
-            name:'Friday',
-            isFree:false,
-          },
-          {
-            name:'Saturday',
-            isFree:false,
-          },
-          {
-            name:'Sunday',
-            isFree:false,
-          }
-        ]
-      });
-    }else{
-      updateDoc(docRef, {activity:'searching'}) 
-    }
-    dispatch(setChooseActivityToggle(false))
-    navigate('/')
-  }
 
-  console.log(servicesData)
+    if(userDocRef){
+      if (el !== 'searching'){
+        setForm(true)
+
+        updateDoc(userDocRef,{
+          about:'',
+          raiting:null,
+          comments:[],
+        }) 
+      }else{
+        dispatch(setChooseActivityToggle(false))
+        navigate('/Shop')
+      }
+      
+
+
+   //id ze gadaviyvano casebi tu sajiro gaxda translklates pontshi 
+      switch (el) {
+        case "Pet Grooming":
+            console.log("It's Monday!");
+            break;
+        case "Pet Taxi":
+            console.log("It's Tuesday!");
+            break;
+        case "Pet Hotel":
+            console.log("It's Wednesday!");
+            break;
+        case "Health & Wellness":
+            console.log("It's Monday!");
+            break;
+        case "Walking & Sitting":
+            updateDoc(userDocRef,{activity:el,walking}) 
+            break;
+        case "Pet Training":
+            console.log("It's Wednesday!");
+            break;     
+        default:
+          updateDoc(userDocRef, {activity:'searching'}) 
+      }
+    
+
+
+    
+    }else{
+      console.log('ar mosula jer')
+    }
+
+     
+   
+  }
 
  
 
+
+ 
+
+  
+   if (form) {
+    return (
+      <div className="absolute top-0 bottom-0 left-0 right-0 bg-[rgba(9,9,9,0.82)] flex items-center justify-center">
+        <ProfileSetUpForm />
+      </div>
+    );
+  }
+  
+
   return(
     <div className=' absolute top-0 bottom-0 left-0 right-0 bg-[rgba(9,9,9,0.82)] flex items-center justify-center'>
+    
       <div className={wantToBeEmployed ? 'bg-white w-[30%] rounded-[20px]' :'bg-white w-[50%] h-[50%] grid grid-cols-2 rounded-[20px] transition-all'}>
-        {wantToBeEmployed ? 
+        {wantToBeEmployed  ? 
          
           <ul className='text-[30px]  flex flex-col gap-[30px] p-[40px]'>
             {servicesData?.map((el , index) => (
@@ -105,7 +114,7 @@ const ChooseActivity = memo(() => {
           
           :
           <>
-            <div onClick={setActivity} className='bg-red-200 flex flex-col justify-center items-center gap-[20px] text-[25px] rounded-[20px] cursor-pointer'>
+            <div onClick={() => setActivity("searching")} className='bg-red-200 flex flex-col justify-center items-center gap-[20px] text-[25px] rounded-[20px] cursor-pointer'>
               <div className='w-[200px] h-[200px] bg-purple-200 rounded-[50%] '></div>
               <div>ვეძებ მომუშავეს</div>
             </div>
@@ -116,6 +125,8 @@ const ChooseActivity = memo(() => {
           </>
         }
       </div>
+
+      
     </div>
   )
 })

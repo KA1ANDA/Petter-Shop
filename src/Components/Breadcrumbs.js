@@ -21,17 +21,22 @@ const Breadcrumbs = () => {
     .map((crumb, index, array) => {
 
       currentLink += `/${crumb}`
+
+      console.log('CRUMBS' , crumb)
       
       return(
-        <div key={crumb} className={`after:content-['>'] after:mx-[10px] last:after:hidden ${
+        <div key={crumb} className={`after:content-['●'] after:text-additional after:text-[20px]  after:rounded-[50%] after:mx-[10px] last:after:hidden text-primary last:text-black text-h5 leading-[19px] font-bold${
           index === array.length - 1 && currentLink.match(/\d+$/)?.[0] ? 'hidden' : '' // Hide the last crumb
-        } ${ index === array.length - 2 && 'after:hidden'}
-        ${ index === array.length - 2 && ' pointer-events-none'}`}>
+        } 
+        `}>
           <NavLink to={currentLink} >{crumb}  </NavLink>
           
         </div>
       )
     })
+
+
+   
 
 
     const lastInteger = currentLink.match(/\d+$/)?.[0] || ''
@@ -49,7 +54,7 @@ const Breadcrumbs = () => {
 
   return(
     <div className="flex">
-      <NavLink to='/' className="after:content-['>'] after:mx-[10px]" >Home</NavLink>
+      <NavLink to='/' className="after:content-['●'] after:text-additional leading-[19px] after:text-[20px]  after:rounded-[50%] after:mx-[10px] text-h5  text-primary font-bold" >Home</NavLink>
       <div className=" flex ">{crumbs}</div>
     </div>
     

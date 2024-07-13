@@ -1,0 +1,74 @@
+export const walking = { 
+  readyToWork:false,
+  services: {
+    soloWalk:[
+      {
+        time:1,
+        price:null
+      },
+      {
+        time:45,
+        price:null
+      },
+      {
+        time:30,
+        price:null
+      },
+      {
+        time:20,
+        price:null
+      },
+    ],
+    groupWalk:[
+      {
+        time:1,
+        price:null
+      },
+      {
+        time:45,
+        price:null
+      },
+      {
+        time:30,
+        price:null
+      },
+      {
+        time:20,
+        price:null
+      },
+    ]
+  },
+  workDates: [
+    {
+      name:'Monday',
+      isFree:false,
+    },
+    {
+      name:'Tuesday',
+      isFree:false,
+    },
+    {
+      name:'Wednesday',
+      isFree:false,
+    },
+    {
+      name:'Thursday',
+      isFree:false,
+    },
+    {
+      name:'Friday',
+      isFree:false,
+    },
+    {
+      name:'Saturday',
+      isFree:false,
+    },
+    {
+      name:'Sunday',
+      isFree:false,
+    }
+  ]
+}
+
+
+

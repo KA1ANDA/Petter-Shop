@@ -1,3 +1,270 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+
+
+
+
+.simpleHover{
+  @apply  hover:bg-primary hover:text-white cursor-pointer transition-all duration-300 
+}
+
+
+.defaultTextHover{
+  @apply transition-all duration-300 hover:text-primary cursor-pointer
+}
+
+::selection {
+  background-color: #7c58d3; /* Orange */
+  color: #fff; /* White text color */
+}
+
+.navbarFade{
+  position: fixed;
+  right: 0;
+  left: 0;
+  top: 0;
+  transition: ease-in-out;
+  transition-duration: 500ms;
+  width: 100% !important;
+  background-color: white !important;
+  z-index: 99;
+  box-shadow: 0px 4px 40px 0px rgba(125, 88, 211, 0.211);
+  padding: 15px  !important;
+}
+
+
+
+
+.navigation .about:hover > .aboutDropdown,
+.navigation .aboutDropdown:hover {
+  transition: all 300ms;
+  opacity: 1;
+  pointer-events: auto; /* Enable pointer events to interact with the dropdown */
+}
+
+
+.addToCartBtn{
+  @apply bg-primary text-[20px] leading-[30px] p-[20px] cursor-pointer font-nunito rounded-standart font-extrabold text-white
+}
+
+
+
+
+
+.shopNowBtnLink{
+  @apply  flex gap-[10px] items-center text-primary  w-fit  font-nunito text-[20px] font-extrabold leading-[30px] 
+}
+
+.shopNowBtnLink .text {
+  @apply  before:content-[""] before:bg-primary before:w-[0px] before:h-[1px] before:absolute before:bottom-0 before:transition-all before:duration-500 before:ease-in-out relative
+}
+
+.shopNowBtnLink:hover .text {
+  @apply before:bg-primary before:w-full transition-all  ;
+}
+
+
+.shopNowBtnLink .icon{
+  @apply  transition-all duration-500 ease-in-out opacity-100 translate-x-0 w-fit ;
+}
+
+.shopNowBtnLink:hover .icon{
+  @apply  transition-all duration-500 ease-in-out opacity-0 translate-x-3 w-fit ;
+}
+
+
+
+
+
+.productPopUpBtn {
+  @apply bg-primary flex items-center justify-center p-[10px] rounded-[50%] cursor-pointer text-h4 transition-all duration-300 relative bottom-0 opacity-0
+}
+
+.productPopUpBtn:hover {
+  @apply bg-additional ;
+}
+
+
+
+
+
+.liHover{
+  @apply transition-all duration-500 hover:marker:text-additional hover:font-extrabold marker:text-[#ffbbdd] marker:text-h5 
+}
+
+
+
+
+.fotterBtnHover:hover .icon {
+  animation: arrowSwipe 0.3s ease-in forwards; /* Animate once on hover */
+}
+
+@keyframes arrowSwipe {
+  49% {
+		transform: translate(100%);
+	}
+	50% {
+		opacity: 0;
+		transform: translate(-100%);
+	}
+	51% {
+		opacity: 1;
+	}
+}
+
+
+
+
+
+.imageBounce:hover {
+  animation: imgBounce 1s ease-out; /* Adjust duration and timing function */
+  animation-fill-mode: forwards; /* Keep element in final position */
+}
+
+
+@keyframes imgBounce {
+  0% {
+    transform: translateY(0px); /* Bounce height */
+    
+  }
+
+  20% {
+    transform: translateY(-10px); /* Bounce height */
+  }
+  40% {
+    transform: translateY(10px); /* Bounce height */
+  }
+  60% {
+    transform: translateY(-10px); /* Bounce height */
+  }
+
+  100% {
+    transform: translateY(0px); /* Bounce height */
+  }
+
+}
+
+
+.categoryParent{
+  @apply flex flex-col   p-[25px]  gap-[30px] border-2 border-lightPrimary  transition-all duration-1000 ease-out rounded-standart 
+}
+
+.activeCategory{
+  @apply   bg-primary 
+}
+
+
+
+.selectedOption{
+  @apply bg-[#f6f6f6]  font-bold text-primary
+}
+
+
+
+.page-item{
+  @apply  px-[20px] rounded-standart text-h5 font-bold leading-[40px] py-[5px] border-2 border-lightPrimary cursor-pointer hover:bg-primary transition-all duration-300 hover:text-white hover:border-primary
+}
+
+
+
+
+
+.productImg:hover .productPopUpBtn{
+  bottom:4rem;
+  opacity: 1;
+  
+}
+
+
+
+
+.sale{
+  @apply before:content-["SALE"] before:bg-secondary before:absolute  before:z-10 before:right-0 sm:before:right-4 before:-top-[10px] before:px-[10px]  before:py-[5px] text-h6 font-bold leading-[19px]  before:rounded-standart
+}
+
+
+
+input[type='number'] {
+  -moz-appearance: textfield; /* Firefox */
+ 
+}
+
+/* Target the inner spin button */
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  opacity: 1; /* Show the inner button */
+}
+
+/* Target the outer spin button */
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  opacity: 1; /* Show the outer button */
+}
+
+
+
+
+.contactIcon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #7c58d3; /* Example background color */
+  width: 0%;
+  height: 0%;
+  border-radius: 50%; /* Rounded shape */
+  transition: width 0.3s, height 0.3s; /* Smooth transition for width and height changes */
+  z-index: -1;
+
+}
+
+.contactParent:hover .contactIcon::before {
+  width: 100%; /* Fills the parent width */
+  height: 100%; /* Fills the parent height */
+}
+
+
+.contactParent:hover .contactIcon {
+  color: white;
+}
+
+
+
+.ball-container {
+  position: relative;
+  width: 100%; /* Adjust width if needed */
+  height: 100%; /* Adjust height if needed */
+  overflow: hidden;
+}
+
+.ball {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+
+
+.signInInput{
+  @apply rounded-standart border-2 border-[#cecece] text-h6 leading-[50px]   px-[20px]   focus:outline-none
+}
+
+.signInButton{
+  @apply  text-white flex items-center cursor-pointer  px-[16px] py-[8px] rounded-standart  border-[1px] border-grayText gap-[10px] justify-center font-bold 
+}
+
+.invalidInput {
+  border-color: red;
+}
+
+/* .filterDropDown{
+  @apply  p-[30px] 
+} */

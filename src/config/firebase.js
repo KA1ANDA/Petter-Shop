@@ -1,9 +1,9 @@
-import { initializeApp } from "firebase/app";
+import { initializeApp} from "firebase/app";
 import {GoogleAuthProvider, getAuth} from "firebase/auth"
 import {getStorage} from "firebase/storage"
 import {collection, getDocs, getFirestore, query, where} from "firebase/firestore"
-
-
+// import { httpsCallable } from 'firebase/functions';
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAXl2iQQmedWYtNYi-8DN_mmBaOK6h7fgU",
@@ -20,8 +20,7 @@ export const auth = getAuth(app)
 export const googleProvider = new GoogleAuthProvider()
 export const storage = getStorage(app)
 export const db = getFirestore(app)
-
-
+export const functions = getFunctions(app);
 
 
 

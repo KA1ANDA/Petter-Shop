@@ -13,11 +13,15 @@ import useGetUserInfo from '../Hooks/useGetUserInfo';
 const ProfilePage = memo(() => {
   const docRef = useUserDocRef();
 
+
   const dispatch = useDispatch()
   const [imageUpload , setImageUpload] = useState(null)
   // const [loading , setLoading] = useState(false)
+ 
 
   const {profilePictureLoading} = useSelector((state) => state.logedUserSlice)
+
+  var selectedUserId = localStorage.getItem("selectedUserId");
 
 
   const deletePreviousPhoto = async () => {
@@ -58,7 +62,8 @@ const ProfilePage = memo(() => {
     })
   }
 
- 
+
+
 
 
   return(
