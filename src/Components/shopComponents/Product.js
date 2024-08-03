@@ -33,7 +33,6 @@ const Product = memo(({product}) => {
   const {averageRating} = useProductRating({productId:product?.id}) 
   
 
-  
 
 
   // useEffect(() => {
@@ -66,11 +65,17 @@ const Product = memo(({product}) => {
     <div className='relative'>
     
         <div >
-          <div className={`${onSalePrice && 'sale'}  relative z-0 flex flex-col gap-4`}>
-            <div className='relative productImg'>
-            <Link to={`/Products/${product.id}`}>
-              <img className='rounded-standart' src={photoUrls[0]}/>
-            </Link>  
+          <div className={`${onSalePrice && 'sale'}    relative z-0 flex flex-col gap-4`}>
+            <div className='relative productImg '>
+              {photoUrls.length > 0 ? 
+              <Link to={`/Products/${product.id}`}>
+                <img className='rounded-standart' src={photoUrls[0]}/>
+              </Link>
+              :
+              <div className=' bg-grayText animate-pulse h-[320px] rounded-standart '></div>
+          
+              }
+            
               <ActionsWithProductBar product={product} /> 
             </div>
             <div className='flex flex-col justify-center items-center'>

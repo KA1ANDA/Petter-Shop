@@ -88,13 +88,18 @@ const CartItem = memo(({ product, onRemove, isOpened }) => {
   return (
     <div className='flex  justify-between text-h4 font-extrabold '>
       {isOpened ? (
-        <div className='grid gap-[10px] lg:gap-0 grid-cols-1 lg:grid-cols-6  w-full  items-center border-b-[1px] pb-[35px] border-grayText  '>
-          <div onClick={() => { handleAddToCart(); onRemove(product.id); }} className='w-full cursor-pointer flex justify-center text-center   text-primary bg-lightPrimary rounded-standart lg:w-fit p-[5px] text-h3 lg:text-h4 simpleHover'>
+        <div className='grid gap-[30px] lg:gap-0 grid-cols-1 lg:grid-cols-6  w-full  items-center border-b-[1px] pb-[35px] border-grayText  '>
+          <div onClick={() => { handleAddToCart(); onRemove(product.id); }} className='w-full cursor-pointer flex justify-center text-center   text-primary bg-lightPrimary rounded-standart  lg:w-fit p-[5px] text-h3 lg:text-h4 simpleHover'>
             <RxCross2 />
           </div>
           <Link to={`/Products/${product.id}`}>
             <div className='flex items-center bg-white max-w-[480px] gap-[15px]'>
+              {photoUrls.length > 0 ? 
               <img className='w-[100px]  rounded-standart' src={photoUrls[0]} />
+              :
+              <div className=' h-[100px]   rounded-standart  bg-grayText animate-pulse  '></div>
+              }
+              
               <div className=' flex flex-col gap-[5px]'>
                 <div className=' text-primary'>{product.title}</div>
                 {color && 
@@ -110,7 +115,7 @@ const CartItem = memo(({ product, onRemove, isOpened }) => {
           
           <div className=' flex justify-between items-center '>
             <div className='block lg:hidden text-h6 font-bold text-grayText'>SIZE</div>
-            <div>{size}</div>
+            <div className=' m-0 lg:m-auto'>{size}</div>
           </div>
           
           
@@ -118,7 +123,7 @@ const CartItem = memo(({ product, onRemove, isOpened }) => {
 
           <div className='flex gap-[10px] justify-between items-center'>
             <div className='block lg:hidden text-h6 font-bold text-grayText'>PRICE</div>
-            <div className='flex gap-[15px]'>
+            <div className='flex gap-[15px] m-0 lg:m-auto'>
               <div className={`${!productPrice.onSalePrice && 'hidden' } order-1`}>${productPrice.onSalePrice}</div>
               <div className={`${productPrice.onSalePrice && 'text-grayText line-through'}`}>${productPrice.price}</div>
             </div>        
@@ -132,9 +137,9 @@ const CartItem = memo(({ product, onRemove, isOpened }) => {
             />
           </div> */}
 
-            <div className='flex gap-[17px] items-center justify-between '>
+            <div className='flex gap-[17px] items-center justify-between  '>
               <div className='block lg:hidden text-h6 font-bold text-grayText'>QUANTITY</div>
-              <div className='flex items-center'>
+              <div className='flex gap-[20px] items-center m-0 lg:m-auto'>
                 <div className=' text-h5 font-bold gap-[17px]'>Qty:</div>
                   <div className=' flex  items-center rounded-standart border-2 border-grayText px-[10px] '>
                     <input className=' rounded-standart text-center py-[20px]  w-[50px] text-[20px] font-extrabold' type='number' value={localQuantity}  readOnly/>
@@ -153,12 +158,12 @@ const CartItem = memo(({ product, onRemove, isOpened }) => {
           {/* <div>${getPriceDisplay()*localQuantity}</div> */}
           <div className='flex  justify-between items-center'>
             <div className='block lg:hidden text-h6 font-bold text-grayText'>TOTAL</div>
-            <div>${(productPrice.onSalePrice ? productPrice.onSalePrice : productPrice.price) * localQuantity}</div>
+            <div className='m-0 lg:m-auto'>${(productPrice.onSalePrice ? productPrice.onSalePrice : productPrice.price) * localQuantity}</div>
           </div>
           
           {productQuantity && localQuantity != productQuantity &&
-            <div className=' col-span-6 text-center rounded-standart bg-primary py-[20px] text-white my-[20px] hover:bg-additional transition-all duration-300 '>
-              <button onClick={()=>updateQuantity(localQuantity)}>save changes</button>
+            <div className=' lg:col-span-6 text-center rounded-standart bg-primary py-[20px] text-white my-[20px] hover:bg-additional transition-all duration-300 '>
+              <button className='w-full' onClick={()=>updateQuantity(localQuantity)}>save changes</button>
             </div>
           }
           
@@ -168,7 +173,12 @@ const CartItem = memo(({ product, onRemove, isOpened }) => {
           
           <Link to={`Products/${product.id}`}>
             <div className='flex items-center gap-[20px]'>
-            <img className='w-[90px] rounded-standart ' src={photoUrls[0]} />
+              {photoUrls.length > 0  ? 
+               <img className='w-[90px] rounded-standart ' src={photoUrls[0]} />
+                :
+                <div className=' h-[90px] w-[90px]  rounded-standart  bg-grayText animate-pulse  '></div>
+              }
+           
               <div className='bg-red-300'>
                 <div className=' text-h5 text-wrap  text-ellipsis overflow-hidden max-h-[100px]'>{product.title}</div>
                 <div className='flex text-primary text-h6 items-center gap-[5px]'>

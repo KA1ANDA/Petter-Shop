@@ -82,7 +82,8 @@ const SelectedProductSlider = memo(({photoUrls}) => {
 
 
         {photoUrls && 
-          photoUrls.map((photo , index) => <SwiperSlide key={index}>
+          photoUrls.map((photo , index) => 
+          <SwiperSlide key={index}>
             <img className=' object-cover'  onClick={() => handleSlideClick(index)} src={photo}/>
           </SwiperSlide>)
         }

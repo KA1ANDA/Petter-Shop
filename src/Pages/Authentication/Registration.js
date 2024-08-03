@@ -20,6 +20,8 @@ const Registration = memo(() => {
   const { registrationToggle } = useSelector((state) => state.logedUserSlice);
   const [loading, setLoading] = useState(false);
   const [registrationError, setRegistrationError] = useState('');
+  const [emailSent, setEmailSent] = useState(false); // New state for email confirmation
+  const [emailVerificationSend, setEmailVerificationSend] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -36,19 +38,14 @@ const Registration = memo(() => {
 
         // Send email verification
         await sendEmailVerification(user);
-        alert('Email verification link sent. Please check your email.');
-
-        // Update user profile
-        await updateProfile(user, { displayName: email.split('@')[0] });
-
-        // Check if the email is verified before setting choose activity toggle
-        if (user.emailVerified) {
-          dispatch(setChooseActivityToggle(true));
-          console.log('Updated Firestore document and set choose activity toggle');
-        } else {
-          alert('Please verify your email before logging in.');
-          // Handle email verification state accordingly
-        }
+        // dispatch(setRegistrationToggle(false))
+        setEmailVerificationSend(true)
+        setEmailSent(true);
+        // Log out the user immediately
+        await signOut(auth);
+        
+        // Set email sent state to true
+        // dispatch(setRegistrationToggle(false)); // Close registration
       } catch (error) {
         if (error.code === 'auth/email-already-in-use') {
           setRegistrationError('This email is already registered.');
@@ -64,68 +61,82 @@ const Registration = memo(() => {
 
   return (
     <div className='fixed top-0 bottom-0 left-0 right-0 bg-[rgba(9,9,9,0.82)] overflow-hidden flex justify-center items-center'>
-      <div className='flex flex-col gap-[30px] p-[50px] rounded-standart w-[500px] bg-white'>
-        <div onClick={() => dispatch(setRegistrationToggle(false))} className='self-end text-h4 cursor-pointer'>
-          <RxCross1 />
+      {!emailSent ? (
+        <div className='flex flex-col gap-[30px]  mx-[10px] sm:m-0 px-[10px] py-[30px] sm:p-[50px] rounded-standart w-[500px] bg-white'>
+          <div onClick={() => dispatch(setRegistrationToggle(false))} className='self-end text-h4 cursor-pointer'>
+            <RxCross1 />
+          </div>
+          <div className='text-center text-h2 font-extrabold'>Registration</div>
+
+          <form onSubmit={formik.handleSubmit} className='flex flex-col gap-[40px]'>
+
+            <div className='flex flex-col gap-[10px]'>
+              <input
+                type='text'
+                placeholder='Write Your Email'
+                name='email'
+                value={formik.values.email}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className={`signInInput ${
+                  formik.touched.email && formik.errors.email ? 'invalidInput' : ''
+                }`}
+              />
+              {formik.touched.email && formik.errors.email && (
+                <div className='text-[red]'>{formik.errors.email}</div>
+              )}
+
+              <input
+                type='password'
+                placeholder='Write Your Password'
+                name='password'
+                value={formik.values.password}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                className={`signInInput ${
+                  formik.touched.password && formik.errors.password ? 'invalidInput' : ''
+                }`}
+              />
+              {formik.touched.password && formik.errors.password && (
+                <div className='text-[red]'>{formik.errors.password}</div>
+              )}
+
+              {registrationError && <div className='text-[red]'>{registrationError}</div>}
+
+            </div>
+           
+            <div className='flex flex-col gap-[15px]'>
+              <button
+                type='submit'
+                className='bg-primary signInButton'
+                disabled={!formik.isValid || !formik.dirty || loading}
+              >
+                {loading ? 'Registering...' : 'Register'}
+              </button>
+              <button className='bg-additional signInButton' onClick={() =>{ googleAuth() ; dispatch(setRegistrationToggle(false))}} disabled={loading}>
+                Sign In With Google
+              </button>
+            </div>
+          </form>
         </div>
-        <div className='text-center text-h2 font-extrabold'>Registration</div>
-
-        <form onSubmit={formik.handleSubmit} className='flex flex-col gap-[40px]'>
-
-          <div className='flex flex-col gap-[10px]'>
-            <input
-              type='text'
-              placeholder='Write Your Email'
-              name='email'
-              value={formik.values.email}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className={`signInInput ${
-                formik.touched.email && formik.errors.email ? 'invalidInput' : ''
-              }`}
-            />
-            {formik.touched.email && formik.errors.email && (
-              <div className='text-[red]'>{formik.errors.email}</div>
-            )}
-
-            <input
-              type='password'
-              placeholder='Write Your Password'
-              name='password'
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              onBlur={formik.handleBlur}
-              className={`signInInput ${
-                formik.touched.password && formik.errors.password ? 'invalidInput' : ''
-              }`}
-            />
-            {formik.touched.password && formik.errors.password && (
-              <div className='text-[red]'>{formik.errors.password}</div>
-            )}
-
-            {registrationError && <div className='text-[red]'>{registrationError}</div>}
-
-          </div>
-         
-          <div className='flex flex-col gap-[15px]'>
-            <button
-              type='submit'
-              className='bg-primary signInButton'
-              disabled={!formik.isValid || !formik.dirty || loading}
-            >
-              {loading ? 'Registering...' : 'Register'}
-            </button>
-            <button className='bg-additional signInButton' onClick={googleAuth} disabled={loading}>
-              Sign In With Google
-            </button>
-          </div>
-        </form>
-      </div>
+      ) : (
+        <div className='flex flex-col gap-[30px] mx-[10px] sm:m-0 px-[10px] py-[30px] sm:p-[50px] rounded-standart w-[500px] bg-white'>
+          <div className='text-center text-h2 font-extrabold'>Email Verification</div>
+          <div className='text-center'>Email verification link sent. Please check your email and verify your account.</div>
+          <button
+            className='bg-primary signInButton'
+            onClick={() => {
+              setEmailSent(false);
+              dispatch(setRegistrationToggle(false));
+              dispatch(setLogInToggle(true));
+            }}
+          >
+            Go to Sign In
+          </button>
+        </div>
+      )}
     </div>
   );
 });
 
 export default Registration;
-
-
-

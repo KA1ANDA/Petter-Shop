@@ -24,12 +24,12 @@ const AdminPage = memo(() => {
 
   return(
     <div className='flex flex-col gap-[35px] w-full px-[15px] 2xl:p-0  2xl:w-[1400px] m-auto  mt-[50px]  xl:mt-[150px]  '>
-       <div className='flex border-2 border-black gap-[25px] text-[25px] font-bold'>
+       <div className='flex border-2 bg-lightPrimary border-primary rounded-standart p-[20px] gap-[50px] text-[25px] font-bold'>
         {tabs.map((tab) => (
           <div
             key={tab.name}
             onClick={() => handleTabChange(tab.name)}
-            className={`cursor-pointer ${activeTab === tab.name ? 'bg-gray-300' : ''}`}
+            className={`cursor-pointer rounded-standart border-2 border-primary p-[5px] ${activeTab === tab.name ? 'bg-primary text-white  ' : ''}`}
           >
             {tab.label}
           </div>

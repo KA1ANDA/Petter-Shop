@@ -20,8 +20,38 @@ const shopFilterSlice = createSlice({
     selectedSlideSrc:null,
     isSaleActive : false ,
     otherSaleDurations : '' ,
+    fastProductShow:false,
+    selectedProductId:'',
+    shippingAddress:{
+      city:'',
+      district:'',
+      firstName:'',
+      lastName:'',
+      address:'',
+      additionalAddressInfo:'',
+      phoneNumber:'',
+      type:''
+    },
+    checkoutToggle:false
   },
   reducers:{
+
+    
+    setCheckoutToggle:(state , action) => {
+      state.checkoutToggle = action.payload
+    },
+
+    setShippingAddress:(state , action) => {
+      state.shippingAddress = action.payload
+    },
+
+    setSelectedProductId:(state , action) => {
+      state.selectedProductId = action.payload
+    },
+
+    setFastProductShow:(state , action) => {
+      state.fastProductShow = action.payload
+    },
    
     setCategoryValue:(state , action) => {
       state.categoryValue = action.payload
@@ -97,5 +127,5 @@ const shopFilterSlice = createSlice({
   }
 })
 
-export const {setCategoryValue ,setPetCategoryValue,  setSubCategoryValue , setFilterByPriceValue , setWishlistToggle , setCartToggle , setReviewValue , setRatingValue , setInCartChanges , setSalesCategory , setCurrentPrice, setCurrentOnSalePrice , setAvailableColors , setSelectedSlideSrc , setIsSaleActive , setOtherSaleDurations} = shopFilterSlice.actions
+export const {setCategoryValue ,setPetCategoryValue,  setSubCategoryValue , setFilterByPriceValue , setWishlistToggle , setCartToggle , setReviewValue , setRatingValue , setInCartChanges , setSalesCategory , setCurrentPrice, setCurrentOnSalePrice , setAvailableColors , setSelectedSlideSrc , setIsSaleActive , setOtherSaleDurations , setFastProductShow , setSelectedProductId , setShippingAddress ,setCheckoutToggle} = shopFilterSlice.actions
 export default shopFilterSlice.reducer

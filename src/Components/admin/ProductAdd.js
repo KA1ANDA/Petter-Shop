@@ -207,6 +207,7 @@ const ProductAdd = memo(() => {
 
   const handleToggleChange = () => {
     setIsChecked((prevChecked) => !prevChecked);
+    setProperty('')
   };
 
   console.log(availableOnSpot)
@@ -240,10 +241,10 @@ const ProductAdd = memo(() => {
         <div className=' font-bold text-[25px]'>ატვირთე სურათი</div>
         
         {!photos.length > 0 ? 
-        <div className='  w-full flex justify-center items-center h-full'>
-          <label className="custum-file-upload " forHtml="file">
-            <div class="icon">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="" viewBox="0 0 24 24"><g stroke-width="0" id="SVGRepo_bgCarrier"></g><g stroke-linejoin="round" stroke-linecap="round" id="SVGRepo_tracerCarrier"></g><g id="SVGRepo_iconCarrier"> <path fill="" d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z" clip-rule="evenodd" fill-rule="evenodd"></path> </g></svg>
+        <div className='  w-full flex justify-center items-center h-full '>
+          <label className="custum-file-upload  " forHtml="file">
+            <div className="icon">
+          <svg  xmlns="http://www.w3.org/2000/svg" fill="" viewBox="0 0 24 24"><g stroke-width="0" id="SVGRepo_bgCarrier"></g><g stroke-linejoin="round" stroke-linecap="round" id="SVGRepo_tracerCarrier"></g><g id="SVGRepo_iconCarrier"> <path fill="" d="M10 1C9.73478 1 9.48043 1.10536 9.29289 1.29289L3.29289 7.29289C3.10536 7.48043 3 7.73478 3 8V20C3 21.6569 4.34315 23 6 23H7C7.55228 23 8 22.5523 8 22C8 21.4477 7.55228 21 7 21H6C5.44772 21 5 20.5523 5 20V9H10C10.5523 9 11 8.55228 11 8V3H18C18.5523 3 19 3.44772 19 4V9C19 9.55228 19.4477 10 20 10C20.5523 10 21 9.55228 21 9V4C21 2.34315 19.6569 1 18 1H10ZM9 7H6.41421L9 4.41421V7ZM14 15.5C14 14.1193 15.1193 13 16.5 13C17.8807 13 19 14.1193 19 15.5V16V17H20C21.1046 17 22 17.8954 22 19C22 20.1046 21.1046 21 20 21H13C11.8954 21 11 20.1046 11 19C11 17.8954 11.8954 17 13 17H14V16V15.5ZM16.5 11C14.142 11 12.2076 12.8136 12.0156 15.122C10.2825 15.5606 9 17.1305 9 19C9 21.2091 10.7909 23 13 23H20C22.2091 23 24 21.2091 24 19C24 17.1305 22.7175 15.5606 20.9844 15.122C20.7924 12.8136 18.858 11 16.5 11Z" clip-rule="evenodd" fill-rule="evenodd"></path> </g></svg>
             </div>
 
             <div class="text">
@@ -330,7 +331,7 @@ const ProductAdd = memo(() => {
 
          
 
-          <div>
+          <div className=' my-[20px]'>
             <ColorDropdown />
           </div>
        
@@ -339,7 +340,7 @@ const ProductAdd = memo(() => {
           
         </div>
         
-{/* 
+
         <div className='  flex flex-col justify-center items-center '>
           <div className=' flex gap-[30px] justify-center items-center font-bold'>
             <div>ზომები არ აქვს </div>
@@ -379,7 +380,7 @@ const ProductAdd = memo(() => {
             }
 
 
-            <div className='flex gap-[20px]'>
+            <div className='flex gap-[20px] my-[10px]'>
               <div>ადგილზე გვაქვს</div>
               <input name='inStock' type='checkbox' value={availableOnSpot} onChange={(e) => setAvailableOnSpot(e.target.checked)}></input>
             </div>
@@ -388,24 +389,24 @@ const ProductAdd = memo(() => {
             :
           <div className='rounded-xl w-full flex flex-col gap-[10px]'>
             
-            <div className='flex gap-[20px]'>
-              <div>
-                <input type='radio' id='სიგრძე' name='property' value='length' onChange={(e) => setProperty(e.target.value)}></input>
+            <div className='flex justify-between items-center gap-[20px] my-[10px]'>
+              <div className='flex justify-center items-center gap-[10px]'>
+                <input className=' w-[20px] h-[20px]' type='radio' id='სიგრძე' name='property' value='length' onChange={(e) => setProperty(e.target.value)}></input>
                 <label htmlFor='სიგრძე'>სიგრძე</label>
               </div>  
 
-              <div>
-                <input type='radio' id='ზომა' name='property' value='size' onChange={(e) => setProperty(e.target.value)}></input>
+              <div className='flex justify-center items-center gap-[10px]'>
+                <input className=' w-[20px] h-[20px]' type='radio' id='ზომა' name='property' value='size' onChange={(e) => setProperty(e.target.value)}></input>
                 <label htmlFor='ზომა'>ზომა</label>
               </div>  
 
-              <div>
-                <input type='radio' id='მოცულობა' name='property' value='volume' onChange={(e) => setProperty(e.target.value)}></input>
+              <div className='flex justify-center items-center gap-[10px]'>
+                <input className=' w-[20px] h-[20px]' type='radio' id='მოცულობა' name='property' value='volume' onChange={(e) => setProperty(e.target.value)}></input>
                 <label htmlFor='მოცულობა'>მოცულობა</label>
               </div>  
 
-              <div>
-                <input type='radio' id='წონა' name='property' value='weight' onChange={(e) => setProperty(e.target.value)}></input>
+              <div className='flex justify-center items-center gap-[10px]'>
+                <input className=' w-[20px] h-[20px]' type='radio' id='წონა' name='property' value='weight' onChange={(e) => setProperty(e.target.value)}></input>
                 <label htmlFor='წონა'>წონა</label>
               </div>  
                 
@@ -459,7 +460,7 @@ const ProductAdd = memo(() => {
                     </div>  
                     }   
 
-                    <div className='flex gap-[20px]'>
+                    <div className='flex gap-[20px] my-[10px]'>
                       <div>ადგილზე გვაქვს</div>
                       <input type='checkbox' value={availableOnSpot} onChange={(e) => setAvailableOnSpot(e.target.checked)}></input>
                     </div>
@@ -467,7 +468,7 @@ const ProductAdd = memo(() => {
                   
                 
 
-                  <button onClick={() => addPropertyValue(`${cmSize.length}X${cmSize.width}`)}>add Property</button>
+                  <button className=' bg-primary rounded-standart py-[10px] font-bold text-white my-[20px] hover:bg-white hover:text-primary hover:border hover:border-primary' onClick={() => addPropertyValue(`${cmSize.length}X${cmSize.width}`)}>add Property</button>
                 </div>
                   
               ) : property === 'size' ? (
@@ -497,11 +498,11 @@ const ProductAdd = memo(() => {
                   </div>  
                   }   
 
-                  <div className='flex gap-[20px]'>
+                  <div className='flex gap-[20px] my-[10px]'>
                     <div>ადგილზე გვაქვს</div>
                     <input type='checkbox' value={availableOnSpot} onChange={(e) => setAvailableOnSpot(e.target.checked)}></input>
                   </div>
-                  <button onClick={() => addPropertyValue(size)}>add Property</button>
+                  <button className=' bg-primary rounded-standart py-[10px] font-bold text-white my-[20px] hover:bg-white hover:text-primary hover:border hover:border-primary' onClick={() => addPropertyValue(size)}>add Property</button>
                 </div>
                 
               ) : property === 'volume' ? (
@@ -523,11 +524,11 @@ const ProductAdd = memo(() => {
                   </div>  
                   }   
 
-                  <div className='flex gap-[20px]'>
+                  <div className='flex gap-[20px] my-[10px]'>
                     <div>ადგილზე გვაქვს</div>
                     <input type='checkbox' value={availableOnSpot} onChange={(e) => setAvailableOnSpot(e.target.checked)}></input>
                   </div>
-                  <button onClick={() => addPropertyValue(volume , 'oz')}>add Property</button>
+                  <button  className=' bg-primary rounded-standart py-[10px] font-bold text-white my-[20px] hover:bg-white hover:text-primary hover:border hover:border-primary' vonClick={() => addPropertyValue(volume , 'oz')}>add Property</button>
                 </div>
               
                 
@@ -552,20 +553,20 @@ const ProductAdd = memo(() => {
                   }
 
 
-                  <div className='flex gap-[20px]'>
+                  <div className='flex gap-[20px] my-[10px]'>
                     <div>ადგილზე გვაქვს</div>
                     <input type='checkbox' value={availableOnSpot} onChange={(e) => setAvailableOnSpot(e.target.checked)}></input>
                   </div>     
-                  <button onClick={() => addPropertyValue(weight , 'g')}>add Property</button>
+                  <button className=' bg-primary rounded-standart py-[10px] font-bold text-white my-[20px] hover:bg-white hover:text-primary hover:border hover:border-primary' onClick={() => addPropertyValue(weight , 'g')}>add Property</button>
                 </div>
               ):(
-                  <p>აირჩიე ზომა </p>
+                  <div className='text-center mb-[20px] text-h4 font-bold p-[10px] border-2 rounded-standart border-primary'>აირჩიე ზომა !!! </div>
               )}
 
             
             </div>
           </div> }
-        </div> */}
+        </div>
 
 
         <div className=' self-end'>

@@ -212,9 +212,9 @@ const ProductUpdate = ({productId}) => {
 
 
   return (
-   <div className='bg-purple-200 p-[20px]'>
+   <div className='bg-white p-[20px]'>
 
-        <div className='border-4 border-green-500 rounded-xl p-[20px]'>
+        <div className='border-4 border-green-500 rounded-standart p-[20px]'>
 
           <div>
             <ColorDropdown />

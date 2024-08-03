@@ -26,7 +26,7 @@ import { setLogInToggle } from '../../Redux/Slices/logedUserSlice';
    
     
     const {isLoged} = useSelector(state => state.logedUserSlice)
-    const q = isLoged ? query(collection(db, 'users'), where('id', '==', auth.currentUser.uid)) : null; // Construct query only if logged in
+    const q = isLoged && auth.currentUser?.emailVerified  ? query(collection(db, 'users'), where('id', '==', auth.currentUser?.uid)) : null; // Construct query only if logged in
 
 
     useEffect(() => {
@@ -53,35 +53,38 @@ import { setLogInToggle } from '../../Redux/Slices/logedUserSlice';
     if (!isLoged) return; // Exit early if user is not logged in
 
     if(product){
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
-        const docRef = querySnapshot.docs[0];
-        if (docRef) {
-          const cart = docRef.data()?.shopCart || [];
-          setIsInCart(cart.some(item => item.id === product.id));
-
-          const cartItem = cart.find((item) => item.id === product.id);
-          
-          if (cartItem) {
-              setProductQuantity(cartItem.quantity);
-              setSize(cartItem.property?.size || '-')
-              setAdditionalPrice(cartItem.property?.additionalPrice || 0);
-              setAdditionalOnSalePrice(cartItem.property?.additionalOnSale || 0);
-              
-              
+      if(q){
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const docRef = querySnapshot.docs[0];
+          if (docRef) {
+            const cart = docRef.data()?.shopCart || [];
+            setIsInCart(cart.some(item => item.id === product.id));
+  
+            const cartItem = cart.find((item) => item.id === product.id);
+            
+            if (cartItem) {
+                setProductQuantity(cartItem.quantity);
+                setSize(cartItem.property?.size || '-')
+                setAdditionalPrice(cartItem.property?.additionalPrice || 0);
+                setAdditionalOnSalePrice(cartItem.property?.additionalOnSale || 0);
                 
-              if (cartItem.color && Object.keys(cartItem.color).length > 0) {
-                setColor(cartItem.color);
-              } else if (product.colors && product.colors.length > 0) {
-                setColor(product.colors[0]);
-              } else {
-                setColor({}); // Or some default value if no colors are available
-              }
-          
-              
-          }
-        }  
-      });
-      return () => unsubscribe();
+                
+                  
+                if (cartItem.color && Object.keys(cartItem.color).length > 0) {
+                  setColor(cartItem.color);
+                } else if (product.colors && product.colors.length > 0) {
+                  setColor(product.colors[0]);
+                } else {
+                  setColor({}); // Or some default value if no colors are available
+                }
+            
+                
+            }
+          }  
+        });
+        return () => unsubscribe();
+      }
+      
     }
 
    

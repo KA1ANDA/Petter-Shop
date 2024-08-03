@@ -133,9 +133,7 @@ exports.createUserAndAddToDB = functions.auth.user().onCreate(async (user) => {
       displayName,
       email: user.email || '',
       photo: user.photoURL || '',
-      city:'',
-      district:'',
-      address:'',
+      shippingAddress:[],
       inbox:[],
       phoneNumber:null,
       activity: '',
@@ -151,16 +149,15 @@ exports.createUserAndAddToDB = functions.auth.user().onCreate(async (user) => {
 });
 
 
-
 //make someone admin 
 
 
 exports.addAdminRole = functions.https.onCall((data , context) => {
-  //check if request is made by admin
+  // check if request is made by admin
   if(context.auth.token.admin !== true){
     return {error:'only admins can add other admins'}
   }
-  //get user and add custom claim (admin)
+  // get user and add custom claim (admin)
   return admin.auth().getUserByEmail(data.email).then(user =>{
     return admin.auth().setCustomUserClaims(user.uid , {
       admin:true

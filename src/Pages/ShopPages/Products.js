@@ -16,183 +16,119 @@
   import SendEmail from './../../Components/shopComponents/SendEmail'
   import Information from '../../Components/Information';
   import productsBg from './../../Components/shopComponents/Photos/productsBg.png'
+import { IoPawSharp } from 'react-icons/io5';
 
-  const Products = memo(() => {
+const Products = memo(() => {
+  const dispatch = useDispatch();
 
-    const dispatch = useDispatch()
-  
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [currentPage, setCurrentPage] = useState(() => {
-      const pageFromURL = parseInt(searchParams.get('page') || 1);
-      // Convert page number from 1-based to 0-based indexing
-      return pageFromURL - 1;
-    });
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [currentPage, setCurrentPage] = useState(() => {
+    const pageFromURL = parseInt(searchParams.get('page') || 1);
+    return pageFromURL - 1;
+  });
 
-    //menu toggles
-    const [sortToggle, setSortToggle] = useState(false);
+  const [sortToggle, setSortToggle] = useState(false);
+  const [petTypeToggle, setPetTypeToggle] = useState(false);
+  const [categoryToggle, setCategoryToggle] = useState(false);
+  const [priceRangeToggle, setPriceRangeToggle] = useState(false);
+  const [subCategoryToggle, setSubCategoryToggle] = useState(false);
 
+  const [currentSortName, setCurrentSortName] = useState('Sort by latest');
+  const [currentSortOption, setCurrentSortOption] = useState('uploadTime-desc');
 
+  const [sort, setSort] = useState();
+  const { categoryValue, petCategoryValue, subCategoryValue, salesCategory } = useSelector(state => state.shopFilterSlice);
 
-    const [petTypeToggle, setPetTypeToggle] = useState(false);
-    const [categoryToggle, setCategoryToggle] = useState(false);
-    const [priceRangeToggle, setPriceRangeToggle] = useState(false);
-    const [subCategoryToggle, setSubCategoryToggle] = useState(false);
+  const { petCategories, categories } = useGetCategories();
+  const { handleCategory, handlePetCategory, handleSubCategory, handleSalesCategory } = useFilterByCategory();
+  const { sortedProducts, filtredProducts, subCategories, productCount } = useGetProducts({
+    sortValue: searchParams.get('sort')?.split('-')?.[0],
+    sortDirection: searchParams.get('sort')?.split('-')?.[1],
+  });
 
-
-    const [currentSortName, setCurrentSortName] = useState('Sort by latest');
-    const [currentSortOption, setCurrentSortOption] = useState('uploadTime-desc');
-
-
-
-
-  
-    
-
-    const [sort, setSort] = useState();
-    const {categoryValue , petCategoryValue , subCategoryValue, salesCategory } = useSelector(state => state.shopFilterSlice)
-
-  
-    const {petCategories, categories} = useGetCategories()
-    const {handleCategory , handlePetCategory ,handleSubCategory , handleSalesCategory} = useFilterByCategory()
-    const {sortedProducts , filtredProducts , subCategories , productCount} = useGetProducts({
-      sortValue: searchParams.get('sort')?.split('-')?.[0],
-      sortDirection: searchParams.get('sort')?.split('-')?.[1],
-
-    })
-
-  
-    const handleSortChange = (e) => {
-      setCurrentSortName(e.target.name)
-      setCurrentSortOption(searchParams.get('sort'))
-      const selectedSort = e.target.value.split('-');
-      setSort({ value: selectedSort[0], direction: selectedSort[1] });
-      setSearchParams((prevParams) => {
-        const params = {
-          ...prevParams,
-          sort: selectedSort.join('-')  ,
-          page: String(1),
-        };
-    
-        if (categoryValue) params.category = categoryValue;
-        if (petCategoryValue) params.petcategory = petCategoryValue;
-        if (subCategoryValue) params.subcategory = subCategoryValue;
-        if (salesCategory) params.sales = true;
-        if (searchParams.has('minPrice')) params.minPrice = searchParams.get('minPrice');
-        if (searchParams.has('maxPrice')) params.maxPrice = searchParams.get('maxPrice');
-    
-        return params;
-      });
-    };
-
-    const handlePageChange = (pageNumber) => {
-      setCurrentPage(pageNumber);
-      setSearchParams((prevParams) => {
-        const params = {
-          ...prevParams,
-          page: String(pageNumber + 1),
-        };
-    
-        if (sort) {
-          params.sort = `${sort.value}-${sort.direction}`;
-        }
-    
-        if (categoryValue) params.category = categoryValue;
-        if (petCategoryValue) params.petcategory = petCategoryValue;
-        if (subCategoryValue) params.subcategory = subCategoryValue;
-        if (salesCategory) params.sales = true;
-        if (searchParams.has('minPrice')) params.minPrice = searchParams.get('minPrice');
-        if (searchParams.has('maxPrice')) params.maxPrice = searchParams.get('maxPrice');
-    
-        return params;
-      });
-    };
-  
-  
-    useEffect(() => {
-      // Parse the sort value from the URL query parameter
-      const sortParam = searchParams.get('sort');
-      if (sortParam) {
-        const [sortValue, sortDirection] = sortParam.split('-');
-        // Set currentSortOption based on the sort value from the URL
-        setCurrentSortOption(sortParam);
-        // Set currentSortName based on the sort value from the URL
-        switch (sortValue) {
-          case 'averageRating':
-            setCurrentSortName('Sort by average rating');
-            break;
-          case 'uploadTime':
-            setCurrentSortName('Sort by latest');
-            break;
-          case 'price':
-            if (sortDirection === 'asc') {
-              setCurrentSortName('Sort by price: low to high');
-            } else if (sortDirection === 'desc') {
-              setCurrentSortName('Sort by price: high to low');
-            }
-            break;
-          default:
-            setCurrentSortName('Sort by latest');
-            break;
-        }
-      }
-    }, [searchParams]); 
-
-
-    useEffect(() => {
-
-      const pageFromURL = parseInt(searchParams.get('page') || 1);
-      if (currentPage !== pageFromURL - 1) {
-        setCurrentPage(pageFromURL - 1);
-      }
-    }, [searchParams]); // Only re-run the effect if searchParams changes
-    
-    // useEffect(() => {
-    //   const newPageParam = currentPage + 1;
-    //   const currentParam = parseInt(searchParams.get('page') || 1);
-    
-    //   const params = {
-    //     ...Object.fromEntries(searchParams.entries()), // Preserve existing parameters
-    //     page: newPageParam,
-    //     sort: sort ? `${sort.value}-${sort.direction}` : '',
-    //     category: categoryValue || '',
-    //     petcategory: petCategoryValue || '',
-    //     subcategory: subCategoryValue || '',
-    //     sales: salesCategory ? true : '',
-    //   };
-    
-    //   setSearchParams(params);
-    // }, [currentPage, sort, categoryValue, petCategoryValue, subCategoryValue, salesCategory]);
-    
-
-    const productsPerPage = 9;
-
-    const indexOfLastProduct = (currentPage + 1) * productsPerPage;
-    const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-    const currentProducts = (filtredProducts.length > 0 ? filtredProducts : sortedProducts).slice(indexOfFirstProduct, indexOfLastProduct);
-
-    useEffect(() => {
-      const newPageParam = currentPage + 1;
-    
+  const handleSortChange = (e) => {
+    setCurrentSortName(e.target.name);
+    setCurrentSortOption(searchParams.get('sort'));
+    const selectedSort = e.target.value.split('-');
+    setSort({ value: selectedSort[0], direction: selectedSort[1] });
+    setSearchParams((prevParams) => {
       const params = {
-        ...Object.fromEntries(searchParams.entries()), // Preserve existing parameters
-        page: newPageParam,
-        sort: sort ? `${sort.value}-${sort.direction}` : 'uploadTime-desc',
-        category: categoryValue || '',
-        petcategory: petCategoryValue || '',
-        subcategory: subCategoryValue || '',
-        sales: salesCategory ? true : '',
+        ...Object.fromEntries(prevParams.entries()),
+        sort: selectedSort.join('-'),
+        page: '1',
       };
-    
-      // Remove empty parameters
-      Object.keys(params).forEach((key) => params[key] === '' && delete params[key]);
-    
-      // Use replace method to update the URL without adding a new history entry
-      // setSearchParams(params, { replace: true });  ES GAVTISHE !!!!!!!!
-    }, [currentPage, sort, categoryValue, petCategoryValue, subCategoryValue, salesCategory]);
 
-    
-    console.log('sortiaaaaaaaaaa' , currentSortName)
-    // console.log(filter)
+      if (categoryValue) params.category = categoryValue;
+      if (petCategoryValue) params.petcategory = petCategoryValue;
+      if (subCategoryValue) params.subcategory = subCategoryValue;
+      if (salesCategory) params.sales = true;
+      if (searchParams.has('minPrice')) params.minPrice = searchParams.get('minPrice');
+      if (searchParams.has('maxPrice')) params.maxPrice = searchParams.get('maxPrice');
+
+      return params;
+    });
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    setSearchParams((prevParams) => {
+      const params = {
+        ...Object.fromEntries(prevParams.entries()),
+        page: String(pageNumber + 1),
+      };
+
+      if (sort) {
+        params.sort = `${sort.value}-${sort.direction}`;
+      }
+
+      if (categoryValue) params.category = categoryValue;
+      if (petCategoryValue) params.petcategory = petCategoryValue;
+      if (subCategoryValue) params.subcategory = subCategoryValue;
+      if (salesCategory) params.sales = true;
+      if (searchParams.has('minPrice')) params.minPrice = searchParams.get('minPrice');
+      if (searchParams.has('maxPrice')) params.maxPrice = searchParams.get('maxPrice');
+
+      return params;
+    });
+  };
+
+  useEffect(() => {
+    const sortParam = searchParams.get('sort');
+    if (sortParam) {
+      const [sortValue, sortDirection] = sortParam.split('-');
+      setCurrentSortOption(sortParam);
+      switch (sortValue) {
+        case 'averageRating':
+          setCurrentSortName('Sort by average rating');
+          break;
+        case 'uploadTime':
+          setCurrentSortName('Sort by latest');
+          break;
+        case 'price':
+          if (sortDirection === 'asc') {
+            setCurrentSortName('Sort by price: low to high');
+          } else if (sortDirection === 'desc') {
+            setCurrentSortName('Sort by price: high to low');
+          }
+          break;
+        default:
+          setCurrentSortName('Sort by latest');
+          break;
+      }
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const pageFromURL = parseInt(searchParams.get('page') || 1);
+    if (currentPage !== pageFromURL - 1) {
+      setCurrentPage(pageFromURL - 1);
+    }
+  }, [searchParams]);
+
+  const productsPerPage = 9;
+  const indexOfLastProduct = (currentPage + 1) * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = (filtredProducts.length > 0 ? filtredProducts : sortedProducts).slice(indexOfFirstProduct, indexOfLastProduct);
 
     return(
       <div>
@@ -201,7 +137,7 @@
        description='Blandit cursus risus at ultrices. Enim sit amet venenatis urna cursus eget nunc scelerisque'
        image={productsBg}/>
       
-      <div className='flex flex-col w-full px-[15px] 2xl:p-0  2xl:w-[1400px] m-auto gap-[160px] '>
+      <div className='flex flex-col w-full px-[15px] 2xl:p-0 2xl:w-[1400px] m-auto gap-[160px] '>
       
     
        
@@ -218,7 +154,7 @@
                 </div>
 
                 
-                  <div className={` transition-all duration-300  ${sortToggle ? '  opacity-100 ' : ' opacity-0 pointer-events-none'} absolute top-[53px]  z-20 w-full sm:w-[280px]  flex flex-col  border-[1px] border-lightPrimary rounded-standart items-start  bg-white `}  >
+                  <div className={` bg-primary transition-all duration-300  ${sortToggle ? '  opacity-100 ' : ' opacity-0 pointer-events-none'} absolute top-[53px]  z-20 w-full sm:w-[280px]  flex flex-col  border-[1px] border-lightPrimary rounded-standart items-start  bg-white `}  >
 
                     {/* <div className= {`${currentSortOption === ' ' && 'selectedOption' }hover:bg-[#f6f6f6] w-full h-full rounded-t-standart border-[#f5f5f5] p-[15px]`}> 
                       <button >Sort by popularity</button>
@@ -239,15 +175,21 @@
             
             <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-x-8  gap-y-12 py-[35px]  '>
               {filtredProducts.length === 0 ? (
-                <div>Nothing found</div>
+                          <div className='sm:col-span-2 xl:col-span-3  flex flex-col   justify-center  items-center gap-[20px]'>
+                            <div className=' text-h1 text-primary border-2 border-primary rounded-[50%] p-[10px]'><IoPawSharp /></div>
+                            <div className=' text-h3 font-bold'>No Item Found</div>
+                          </div>
               ) : (
               currentProducts.map((product) => (
-                <Product key={product.id} product={product} />
+              
+                  <Product  key={product.id} product={product} />
+             
+               
                 ))
               )}
             </div>
 
-            <div className='  flex justify-start '>
+            <div className='   flex justify-start '>
               <Pagination
                 productsPerPage={productsPerPage}
                 totalProducts={(filtredProducts.length > 0 ? filtredProducts : sortedProducts).length}
@@ -265,8 +207,8 @@
 
           <div className='   order-1 lg:order-2 lg:col-span-4 xl:col-span-3 flex flex-col gap-[50px] w-full lg:w-auto  h-fit lg:sticky top-0  '>
             <div className={`flex justify-between`}>
-              <div onClick={()=>handleSalesCategory(salesCategory)}>Sales</div>
-              {salesCategory && <div onClick={() => dispatch(setSalesCategory(false))}>delete</div>}
+              <div className=' bg-secondary text-center font-extrabold rounded-standart w-full cursor-pointer py-[10px]' onClick={()=>handleSalesCategory(!salesCategory)}>SALES</div>
+            
             </div>
           
             
@@ -279,14 +221,14 @@
               </div>
 
               
-              <div  className= {`flex flex-col gap-[20px] transition-all overflow-hidden duration-1000 ease-out  `}>
+              <div  className= {`flex flex-col gap-[20px] transition-all overflow-hidden duration-1000  ease-out  `}>
                 {petCategories && petCategories.map((petType) =>
 
                 <div onClick={() => petCategoryValue === petType.id && dispatch(setPetCategoryValue('')) } className={`flex justify-between items-center defaultTextHover  `} > 
 
-                  <div className=' flex items-center gap-[10px] text-h5 font-bold leading-[18px] '>
+                  <div onClick={() => handlePetCategory(petType.id , petType.name)}  className=' flex items-center gap-[10px] text-h5 font-bold leading-[18px] '>
                   <div className= {`${petCategoryValue === petType.id && 'activeCategory'} w-[16px] h-[16px] rounded-[50%]  border-2 border-lightPrimary`}> </div>
-                    <div key={petType.id} onClick={() => handlePetCategory(petType.id , petType.name)} className={`${petCategoryValue === petType.id ? 'bg-red-400' : ''}`}>
+                    <div key={petType.id} className={`${petCategoryValue === petType.id ? 'bg-red-400' : ''}`}>
                         {petType.name}
                   </div>
       
@@ -308,7 +250,7 @@
 
 
 
-            <div className={` h-[580px]  ${categoryToggle && 'h-[80px]' } categoryParent  `}>
+            <div className={` h-[590px]  ${categoryToggle && 'h-[80px]' } categoryParent  `}>
             
               <div onClick={() => setCategoryToggle(!categoryToggle)} className='  flex justify-between items-center text-[25px] cursor-pointer'>
                 <div className=' text-h4 font-bold leading-[30px]'>Categories</div>
@@ -322,9 +264,9 @@
 
                 <div onClick={() => { categoryValue === category.id && dispatch(setCategoryValue(''));dispatch(setSubCategoryValue('')); }} className={`flex justify-between items-center  `}> 
 
-                  <div className=' flex items-center  gap-[10px] text-h5 font-bold leading-[18px] defaultTextHover'>
+                  <div onClick={() => handleCategory(category.id,category.name)} className=' flex items-center  gap-[10px] text-h5 font-bold leading-[18px] defaultTextHover'>
                     <div className= {`${categoryValue === category.id && 'activeCategory'} w-[16px] h-[16px]  rounded-[50%] border-2 border-lightPrimary`}> </div>
-                    <div key={category.id} onClick={() => handleCategory(category.id,category.name)} >
+                    <div key={category.id}  >
                       {category.name}
                     </div>
                   </div>
@@ -377,11 +319,11 @@
                 <div  className= {`flex flex-col gap-[20px] transition-all overflow-y-auto duration-1000 ease-out   `}>
                   {subCategories.map((subCategory) =>
                   
-                <div className={`flex  items-center  gap-[10px] text-h5 font-bold leading-[18px] defaultTextHover `}> 
+                <div onClick={() => handleSubCategory(subCategory.id, subCategory.name)} className={`flex  items-center  gap-[10px] text-h5 font-bold leading-[18px] defaultTextHover `}> 
 
                   <div className= {`${subCategoryValue === subCategory.id && 'activeCategory'} w-[16px] h-[16px]  rounded-[50%] border-2 border-lightPrimary `}></div>
 
-                  <div key={subCategory.id} onClick={() => handleSubCategory(subCategory.id, subCategory.name)}  >
+                  <div key={subCategory.id}   >
                     {subCategory.name}
                   </div> 
                 </div>

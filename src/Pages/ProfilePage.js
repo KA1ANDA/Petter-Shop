@@ -8,6 +8,7 @@ import { collection, doc, getDoc, getDocs, query, updateDoc, where } from 'fireb
 import useUserDocRef from '../Hooks/useUserDocRef';
 import PersonProfile from '../Components/PersonProfile';
 import useGetUserInfo from '../Hooks/useGetUserInfo';
+import AddAdminRole from '../Components/admin/AddAdminRole';
 
 
 const ProfilePage = memo(() => {
@@ -54,6 +55,7 @@ const ProfilePage = memo(() => {
         updateProfile(auth.currentUser, { photoURL: downloadURL }).then(()=>{
           dispatch(setProfilePictureLoading(false))
           setImageUpload(null)
+          
         })
 
         updateDoc(docRef, {photo: downloadURL});
@@ -62,12 +64,17 @@ const ProfilePage = memo(() => {
     })
   }
 
+  useEffect(() => {
+    if (imageUpload) {
+      uploadImage();
+    }
+  }, [imageUpload]);
 
 
 
 
   return(
-    <div className='bg-red-300 m-auto flex flex-col  items-center'>
+    <div className='h-[100%]  flex flex-col w-full px-[20px] 2xl:p-0  2xl:w-[1400px] m-auto gap-[100px] mt-[50px]  xl:mt-[150px] '>
       <PersonProfile  profilePictureLoading={profilePictureLoading}  setImageUpload={setImageUpload}  uploadImage={uploadImage}  docRef={docRef} />
     </div>
   )

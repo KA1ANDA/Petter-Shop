@@ -1,11 +1,11 @@
 import React, { memo } from 'react';
 import { FaPaw } from "react-icons/fa6";
-
+import petcontact from './shopComponents/Photos/petcontact.jpg'
 const ContactUsForm = memo(() => {
   
   
   return(
-    <div className='  grid grid-cols-1 lg:grid-cols-2'>
+    <div className='  grid grid-cols-1 lg:grid-cols-2 gap-[30px] justify-center items-center'>
       <div className=' flex flex-col gap-[20px]'>
         <div className=' text-h2 font-extrabold'>Contact Us</div>
         <div className=' text-h5'>Massa enim nec dui nunc mattis enim ut tellus. Auctor augue mauris augue neque gravida in fermentum</div>
@@ -27,6 +27,9 @@ const ContactUsForm = memo(() => {
           <div className='text-secondary'><FaPaw/></div>
           <div>Get Service</div>
           </button>
+      </div>
+      <div className=' rounded-standart  '>
+        <img className='  rounded-standart ' src={petcontact}/> 
       </div>
       
     </div>

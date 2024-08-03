@@ -8,6 +8,7 @@ import useGetProductPhotos from '../../Hooks/ShopHooks/useGetProductPhotos';
 import useProductRating from '../../Hooks/ShopHooks/useProductRating';
 import useGetProductPrice from '../../Hooks/ShopHooks/useGetProductPrice';
 import { Link } from 'react-router-dom';
+import { IoPawSharp } from 'react-icons/io5';
 
 
 
@@ -43,14 +44,20 @@ const VerticalProductGroups = memo(() => {
   return(
     <div className='grid grid-cols-1 lg:grid-cols-3 gap-[30px] ' >
       <div className=' flex flex-col gap-[40px] '>
-        <div className='text-h3 font-extrabold'>Top Rated Products</div>
+        <div className='flex justify-center items-center gap-[20px] text-h3 font-extrabold  w-fit'>
+          <div>Top Rated Products</div>
+          <div className=' hidden xl:block text-secondary text-h4 bg-primary rounded-[50%] p-[10px] shadow-md shadow-black'><IoPawSharp /></div>
+        </div>
         <div className='flex flex-col gap-[30px] '>
           {sortedProducts && sortedProducts.slice(0, 3).map(product => <div className=' flex flex-col gap-[30px]'><Item key={product.id} product={product}/> <hr className=' text-[#ede8f8]' /></div> )}
         </div>
       </div>
 
       <div className='flex flex-col gap-[40px]'>
-        <div className='text-h3 font-extrabold'>On Sale Products</div>
+        <div className='flex justify-center items-center gap-[20px] text-h3 font-extrabold  w-fit'>
+          <div>On Sale Products</div>
+          <div className=' hidden xl:block text-secondary text-h4 bg-primary rounded-[50%] p-[10px] shadow-md shadow-black'><IoPawSharp /></div>
+        </div>
         <div  className='flex flex-col gap-[30px]'>
         {onSaleProducts &&
             onSaleProducts.slice(0, 3).map((product) =><div className=' flex flex-col gap-[30px]'> <Item key={product.id} product={product} /> <hr  className=' text-[#ede8f8]'/> </div>)}
@@ -59,7 +66,10 @@ const VerticalProductGroups = memo(() => {
 
 
       <div className=' flex flex-col gap-[40px]'>
-        <div className='text-h3 font-extrabold'>New Products</div>
+        <div className='flex justify-center items-center gap-[20px] text-h3 font-extrabold  w-fit'>
+          <div>New Productss</div>
+          <div className=' hidden xl:block text-secondary text-h4 bg-primary rounded-[50%] p-[10px] shadow-md shadow-black'><IoPawSharp /></div>
+        </div>
         <div  className='flex flex-col gap-[30px]'>
           {latestProducts && latestProducts.slice(0, 3).map(product => <div className=' flex flex-col gap-[30px]'><Item product={product}/> <hr  className=' text-[#ede8f8]'/></div>)}
         </div>
@@ -102,7 +112,13 @@ const Item = memo(({product}) => {
     <Link to={`Products/${product.id}`}>
       <div className={`${onSalePrice && !isMobile ? 'sale' : ''} relative z-0 flex  gap-[30px] max-h-[110px] `}>
         <div className={`relative w-[115px] h-[115px] ${onSalePrice && isMobile ? 'sale' : ''}`}>
-          <img className='  w-full h-full object-cover rounded-standart ' src={photoUrls[0]}/>
+          {photoUrls.length > 0 ? 
+           <img className='  w-full h-full object-cover rounded-standart ' src={photoUrls[0]}/>
+          :
+
+          <div className=' bg-grayText animate-pulse h-[115px]  rounded-standart '> </div>
+          }
+         
         </div>
         <div className='flex flex-col gap-[10px] max-w-[130px]'>
           <div className='flex flex-col gap-[5px]'>

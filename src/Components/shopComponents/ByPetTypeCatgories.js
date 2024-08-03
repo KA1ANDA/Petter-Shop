@@ -6,6 +6,7 @@ import useFilterByCategory from '../../Hooks/ShopHooks/useFilterByCategory';
 import { NavLink } from 'react-router-dom';
 import { setCategoryValue, setPetCategoryValue } from '../../Redux/Slices/shopFilterSlice';
 import { useDispatch } from 'react-redux';
+import { IoPawSharp } from 'react-icons/io5';
 
 
 const ByPetTypeCatgories = memo(() => {
@@ -29,15 +30,22 @@ const ByPetTypeCatgories = memo(() => {
             <img src={petCategorie.photoURL}/>
           </div>
           
-          <div className='  m-7 flex flex-col gap-5 z-40  '>
+          <div className='  m-7 flex flex-col gap-5 z-40   '>
             <div className=' text-h4 font-extrabold'>Shop {petCategorie.name}</div>
+            {petCategorie.categories.length > 0 ?
             <ul className=' grid grid-cols-2 gap-x-[45px] gap-y-[10px] list-disc text-h6 font-normal leading-5'>
-              {petCategorie.categories ?
+              {petCategorie.categories.length > 0 &&
                 petCategorie.categories.map((categorie) => <AsyncCategoryName categoryId={categorie} petId={petCategorie.id} />)
-                :
-                <div>No Categorie Found</div>
+                
+                
               }
             </ul>
+            :
+            <div className='  flex flex-col  w-full justify-center items-center gap-[20px]'>
+              <div className=' text-h3 text-primary border-2 border-primary rounded-[50%] p-[10px]'><IoPawSharp /></div>
+              <div className=' text-h5 font-bold'>No Category Found</div>
+            </div>
+}
 
             
           </div>
@@ -98,6 +106,8 @@ const AsyncCategoryName = memo(({ categoryId , petId}) => {
     pathname: '/Shop/Products',
     search: `?category=${categoryId}&petcategory=${petId}`, // Include both category and petcategory in the URL
   }} onClick={setByPetTypeCategories}><div>{categoryName}</div></NavLink>
+
+  
   </li> 
 });
 

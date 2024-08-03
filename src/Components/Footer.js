@@ -13,7 +13,7 @@ const Footer = memo(() => {
   
 
   return(
-    <div className=' px-[15px] 2xl:px-0 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-[66px]'  >
+    <div className=' px-[15px] 2xl:px-0 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-[66px] mb-[30px] '  >
       <div className='flex flex-col gap-[30px]'>
         <img src={logo} className=' max-w-[180px]'/>
         <div className=' text-h5 font-normal leading-[26px]'>Tristique nulla aliquet enim tortor at auctor urna nunc. Massa enim nec dui nunc mattis enim ut tellus. Sed ut perspiciatis unde …</div>

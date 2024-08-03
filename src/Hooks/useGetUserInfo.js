@@ -1,32 +1,27 @@
 import { useState, useEffect } from 'react';
-import { getDoc, getDocs } from 'firebase/firestore';
+import { onSnapshot } from 'firebase/firestore';
 import useUserDocRef from './useUserDocRef';
 
 const useGetUserInfo = () => {
-  
-
-  const userDocRef = useUserDocRef()
-
-  const [userData, setUserData] = useState([]);
+  const userDocRef = useUserDocRef();
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    if(userDocRef){
-      const fetchUserInfo = async () => {
-        const docSnap = await getDoc(userDocRef);
-        const userData = docSnap.data();
-        setUserData(userData);
-      };
-      
-      fetchUserInfo();
+    if (userDocRef) {
+      const unsubscribe = onSnapshot(userDocRef, (doc) => {
+        if (doc.exists()) {
+          setUserData(doc.data());
+        } else {
+          console.log("No such document!");
+        }
+      });
+
+      // Cleanup subscription on unmount
+      return () => unsubscribe();
     }
-    
   }, [userDocRef]);
 
   return userData;
 };
 
 export default useGetUserInfo;
-
-
-
-

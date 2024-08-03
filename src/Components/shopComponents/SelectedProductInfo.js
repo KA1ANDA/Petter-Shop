@@ -2,11 +2,9 @@ import React, { memo, useEffect, useState } from 'react';
 import useGetSelectedProduct from '../../Hooks/ShopHooks/useGetSelectedProduct';
 import useGetProductPhotos from '../../Hooks/ShopHooks/useGetProductPhotos';
 import useAddToCart from '../../Hooks/ShopHooks/useAddToCart';
-
 import { auth } from '../../config/firebase';
 import ProductRaiting from './Raiting/ProductRaiting';
 import useProductRating from '../../Hooks/ShopHooks/useProductRating';
-
 import AverageRating from './Raiting/AverageRating';
 import { NavLink } from 'react-router-dom';
 import ProductPrice from './ProductPrice';
@@ -16,94 +14,92 @@ import { setCurrentOnSalePrice, setCurrentPrice, setOtherSaleDurations } from '.
 import SelectedProductSlider from './Swiper/SelectedProductSlider';
 import SaleTimeDuration from './SaleTimeDuration';
 import ShippingInfoAlert from './ShippingInfoAlert';
-import { IoIosArrowUp } from "react-icons/io";
-import { IoIosArrowDown } from "react-icons/io";
+import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import { FaPaw } from "react-icons/fa6";
+import Loader from '../Loader'; // Ensure you have a Loader component
 
 const SelectedProductInfo = memo(() => {
-  
+  const dispatch = useDispatch();
+  const [x, setX] = useState();
+  const [y, setY] = useState();
+  const [scale, setScale] = useState();
+  const { currentPrice, currentOnSalePrice, selectedSlideSrc } = useSelector(state => state.shopFilterSlice);
+  const [currentColor, setCurrentColor] = useState('');
+  const [availableOnSpot, setAvailableOnSpot] = useState();
+  const { selectedProduct, category, subCategory, loading } = useGetSelectedProduct();
+  const { photoUrls } = useGetProductPhotos({ product: selectedProduct });
+  const { handleAddToCart, productQuantity, isInCart, handleProperty, quantity, handleColor, handleQuantityDecrement, handleQuantityIncrement } = useAddToCart({ product: selectedProduct });
+  const { averageRating, ratingsData } = useProductRating({ productId: selectedProduct?.id });
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [shippingInfoAlert, setShippingInfoAlert] = useState(false);
 
-  // const [currentPrice, setCurrentPrice] = useState(0);
-  // const [currentOnSalePrice, setCurrentOnSalePrice] = useState(0);
-  const dispatch = useDispatch()
-
-  const [x ,setX] = useState()
-  const [y ,setY] = useState()
-  const [scale ,setScale] = useState()
-
-
-  const {currentPrice , currentOnSalePrice , selectedSlideSrc} = useSelector(state => state.shopFilterSlice)
-  const [currentColor, setCurrentColor] = useState('')
-  const [availableOnSpot , setAvailableOnSpot] = useState()
-
-  const {selectedProduct , category , subCategory} = useGetSelectedProduct()
-  const {photoUrls} = useGetProductPhotos({product:selectedProduct})
-  const {handleAddToCart , productQuantity , isInCart  , handleProperty ,quantity , handleColor , handleQuantityDecrement , handleQuantityIncrement} = useAddToCart({product:selectedProduct})
-  const {averageRating , ratingsData} = useProductRating({productId:selectedProduct?.id}) 
-  
-
-  const handleSizes = (property , additionalPrice , additionalOnSale , onSaleduration , availableOnSpot) => {
-    handleProperty(property)
-    dispatch(setCurrentPrice(additionalPrice))
-    dispatch(setCurrentOnSalePrice(additionalOnSale))
-    dispatch(setOtherSaleDurations(onSaleduration))
-    setAvailableOnSpot(availableOnSpot)
-  }
-
+  const handleSizes = (property, additionalPrice, additionalOnSale, onSaleduration, availableOnSpot) => {
+    handleProperty(property);
+    dispatch(setCurrentPrice(additionalPrice));
+    dispatch(setCurrentOnSalePrice(additionalOnSale));
+    dispatch(setOtherSaleDurations(onSaleduration));
+    setAvailableOnSpot(availableOnSpot);
+  };
 
   useEffect(() => {
-    dispatch(setOtherSaleDurations(''))
-  },[selectedProduct])
- 
-
+    if (selectedProduct && selectedProduct.colors) {
+      setCurrentColor(selectedProduct.colors[0]?.name);
+    }
+  }, [selectedProduct]);
 
   useEffect(() => {
-    const productPrice = () =>{
-      if(selectedProduct && selectedProduct.sizes.length > 0){
-        dispatch(setCurrentPrice(selectedProduct.sizes[0].additionalPrice))
-        dispatch(setCurrentOnSalePrice(selectedProduct.sizes[0].additionalOnSale))
-        dispatch(setOtherSaleDurations(selectedProduct.sizes[0].onSaleduration))
-        setAvailableOnSpot(selectedProduct.sizes[0].availableOnSpot)
-        
-      }else{
-        dispatch(setCurrentPrice(selectedProduct.price))
-        dispatch(setCurrentOnSalePrice(selectedProduct.onSalePrice))
-        setAvailableOnSpot(selectedProduct.availableOnSpot)
+    if (selectedProduct && selectedProduct.sizes.length > 0) {
+      setSelectedSize(selectedProduct?.sizes[0].id);
+    }
+  }, [selectedProduct]);
+
+  useEffect(() => {
+    dispatch(setOtherSaleDurations(''));
+  }, [selectedProduct]);
+
+  useEffect(() => {
+    const productPrice = () => {
+      if (selectedProduct && selectedProduct.sizes.length > 0) {
+        dispatch(setCurrentPrice(selectedProduct.sizes[0].additionalPrice));
+        dispatch(setCurrentOnSalePrice(selectedProduct.sizes[0].additionalOnSale));
+        dispatch(setOtherSaleDurations(selectedProduct.sizes[0].onSaleduration));
+        setAvailableOnSpot(selectedProduct.sizes[0].availableOnSpot);
+      } else {
+        dispatch(setCurrentPrice(selectedProduct.price));
+        dispatch(setCurrentOnSalePrice(selectedProduct.onSalePrice));
+        setAvailableOnSpot(selectedProduct.availableOnSpot);
       }
+    };
+
+    if (selectedProduct) {
+      productPrice();
     }
+  }, [selectedProduct]);
 
-    if(selectedProduct){
-      productPrice()
-    }
-
-
-
-  },[selectedProduct])
-   
   const imageZoom = (e) => {
-    const x = e.clientX - e.target.offsetLeft
-    const y = e.clientY - e.target.offsetTop
-    console.log(x,y)
-
-    setX(x)
-    setY(y)
-    setScale(2)
+    const x = e.clientX - e.target.offsetLeft;
+    const y = e.clientY - e.target.offsetTop;
+    setX(x);
+    setY(y);
+    setScale(2);
     e.target.addEventListener('mouseleave', handleMouseLeave);
-  }
+  };
 
   const handleMouseLeave = () => {
     setScale(1); // Reset the scale to its default value
   };
-  console.log(photoUrls , 'lalalala')
 
+  if (loading ) {
+    return <div className=' w-[400px] h-[400px] m-auto'><Loader /></div>;
+  }
+
+ 
   return( 
 
     <>
-      <div>
-        <ShippingInfoAlert availableOnSpot={availableOnSpot}/>
-      </div>
+      
       {selectedProduct && photoUrls &&  
-      <div className=' grid grid-cols-1 lg:grid-cols-2 gap-[40px]  '>
+      <div className=' grid grid-cols-1 lg:grid-cols-2 gap-[40px]   '>
 
         <div className=' flex flex-col lg:flex-row gap-[30px]  lg:min-h-[540px] lg:max-h-[600px] bg-white'>
           <div className=' order-2 lg:order-1 relative w-full   lg:min-w-[160px] lg:max-w-[160px] '>
@@ -115,7 +111,7 @@ const SelectedProductInfo = memo(() => {
             transformOrigin: `${x}px ${y}px`, 
             transform: `scale(${scale})`, 
             }} />
-            
+             
           </div>
         </div>
         
@@ -140,6 +136,7 @@ const SelectedProductInfo = memo(() => {
           <div className=' text-h3'>
             <ProductPrice  price={currentPrice} onSalePrice={currentOnSalePrice} />
           </div>
+         
           
           <div className='flex flex-col sm:flex-row gap-[40px]'>
             <div className='flex gap-[17px] items-center'>
@@ -151,6 +148,8 @@ const SelectedProductInfo = memo(() => {
                   <div  className=' cursor-pointer' onClick={handleQuantityDecrement}><IoIosArrowDown /></div>
                 </div>
               </div>
+
+              
               
             </div>
             <div className=' '>
@@ -167,13 +166,31 @@ const SelectedProductInfo = memo(() => {
               }
             </div>
           </div>
+
+          <div className=' relative' onClick={() => setShippingInfoAlert(!shippingInfoAlert)}>
+            <ShippingInfoAlert availableOnSpot={availableOnSpot}/>
+            {shippingInfoAlert && <div className=' text-primary font-extrabold px-[35px] py-[20px] z-10 absolute  shadow-md shadow-black bg-lightPrimary rounded-standart '>
+              შიპინგის შესახებ ინფორმაცია :
+              <ul className=' list-disc'>
+                <li>1-3 დღე - ნიშნავს პროდუქტი არის ადგილზე და თქვენამდე მიწოდება მოხდება მოცემულ დროის ინტერვალში</li>
+                <li>10-15 დღე -  ნიშნავს პროდუქტი არ არის ადგილზე და მისი ჩამოტანა და თქვენამდე მიწოდება მოხდება მოცემულ დროის ინტერვალში</li>
+              </ul>
+              <div className=' text-h6 mt-[10px] text-[#FF0000]'>დამატებითი ინფორმაციისათვის მოგვწერეთ პირადში</div>
+            </div>}
+            
+          </div>
           
           {selectedProduct.sizes.length > 0 && 
           <div className='flex flex-col gap-[10px] '>
             <div>Sizes:</div>
             <div className='flex gap-[20px] justify-start'>
               {selectedProduct.sizes && selectedProduct.sizes.map((property) => 
-              <div onClick={()=>handleSizes(property , property.additionalPrice,property.additionalOnSale ,property.onSaleduration , property.availableOnSpot )} className=' bg-primary cursor-pointer text-h5 font-bold  p-[10px] rounded-standart text-white '>
+              <div onClick={()=>{handleSizes(property , property.additionalPrice,property.additionalOnSale ,property.onSaleduration , property.availableOnSpot ) ; setSelectedSize(property.id)}}  className={`shadow-sm shadow-black hover:scale-110  hover:shadow-md hover:shadow-black transition-all duration-300 cursor-pointer text-h5 font-bold p-[10px] rounded-standart text-black ${
+                selectedSize === property.id
+                  ? 'bg-primary border-[2px] border-primary text-white shadow-md shadow-black scale-110'
+                  : 'bg-lightPrimary border-[2px] border-primary shadow-sm shadow-black'
+              }`}
+            >
                 <div>{property.size}</div>        
               </div>)}
             </div>
@@ -184,10 +201,14 @@ const SelectedProductInfo = memo(() => {
           <div className='flex flex-col gap-[10px] '>
             {currentColor ? <div>Color:{currentColor}</div> : <div>Available Colors:</div>}
 
-            <div className=' flex gap-[30px]'>
+            <div className=' flex gap-[30px] bg-lightPrimary rounded-standart w-fit border-2 border-primary p-[20px]'>
               {selectedProduct.colors && selectedProduct.colors.map((color) => 
                  
-              <div onClick={()=> (handleColor(color) , setCurrentColor(color.name))} style={{ backgroundColor: color.value }} className='w-[20px] h-[20px] rounded-[50%] cursor-pointer'></div>
+              <div onClick={()=> (handleColor(color) , setCurrentColor(color.name))} style={{ backgroundColor: color.value }} className={` border-black border-[1px] w-[20px] h-[20px] rounded-[50%] cursor-pointer shadow-sm shadow-black hover:scale-150  hover:shadow-md hover:shadow-black transition-all duration-300 ${
+                currentColor === color.name
+                  && 'scale-150  shadow-md shadow-black  '
+                  
+              }`}></div>
               )}
             </div>
            

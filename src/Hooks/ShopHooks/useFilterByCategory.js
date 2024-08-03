@@ -1,80 +1,79 @@
-import { useState, useEffect } from 'react';
-import useGetProducts from './useGetProducts';
+import { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCategoryValue, setFilter, setPetCategoryValue, setSalesCategory, setSubCategoryValue } from '../../Redux/Slices/shopFilterSlice';
-import useGetSubCategories from './useGetSubCategories';
 import { useSearchParams } from 'react-router-dom';
 
 const useFilterByCategory = () => {
-  // const [filter , setFilter] = useState()
-  // const {fetchNestedSubCategories , subCategories} = useGetSubCategories()
-
-  const dispatch = useDispatch()
-  // const {categoryValue , petCategoryValue } = useSelector(state => state.shopSlice)
-
-  // const {filtredProducts} = useGetProducts({
-  //   categoryValue,
-  //   petCategoryValue
-  // })
-
-
-
+  const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
 
+  const categoryValue = useSelector(state => state.shopFilterSlice.categoryValue);
+  const petCategoryValue = useSelector(state => state.shopFilterSlice.petCategoryValue);
+  const subCategoryValue = useSelector(state => state.shopFilterSlice.subCategoryValue);
 
-  const handleCategory = (id) => {
-    dispatch(setCategoryValue(id));
-    dispatch(setSubCategoryValue(''));
-  
-    // Get existing search parameters
-    const existingSearchParams = Object.fromEntries(searchParams.entries());
-  
-    // Update search parameters when category is selected
-    setSearchParams({
-      ...existingSearchParams,
-      category: id,
-    });
-  };
-  
-  const handlePetCategory = (id) => {
-    dispatch(setPetCategoryValue(id));
-  
-    // Get existing search parameters
-    const existingSearchParams = Object.fromEntries(searchParams.entries());
-  
-    // Update search parameters when pet category is selected
-    setSearchParams({
-      ...existingSearchParams,
-      petcategory: id,
-    });
-  };
-  
+  const handleCategory = useCallback((id) => {
+    if (categoryValue === id) {
+      dispatch(setCategoryValue(''));
+      dispatch(setSubCategoryValue(''));
+      const existingSearchParams = Object.fromEntries(searchParams.entries());
+      delete existingSearchParams.category;
+      delete existingSearchParams.subcategory;
+      setSearchParams(existingSearchParams);
+    } else {
+      dispatch(setCategoryValue(id));
+      dispatch(setSubCategoryValue(''));
+      const existingSearchParams = Object.fromEntries(searchParams.entries());
+      setSearchParams({
+        ...existingSearchParams,
+        category: id,
+        page: '1', // Reset to the first page
+      });
+    }
+  }, [categoryValue, searchParams, dispatch, setSearchParams]);
 
-  const handleSubCategory = (id) => {
-    dispatch(setSubCategoryValue(id));
-  
-    // Get existing search parameters
+  const handlePetCategory = useCallback((id) => {
+    if (petCategoryValue === id) {
+      dispatch(setPetCategoryValue(''));
+      const existingSearchParams = Object.fromEntries(searchParams.entries());
+      delete existingSearchParams.petcategory;
+      setSearchParams(existingSearchParams);
+    } else {
+      dispatch(setPetCategoryValue(id));
+      const existingSearchParams = Object.fromEntries(searchParams.entries());
+      setSearchParams({
+        ...existingSearchParams,
+        petcategory: id,
+        page: '1', // Reset to the first page
+      });
+    }
+  }, [petCategoryValue, searchParams, dispatch, setSearchParams]);
+
+  const handleSubCategory = useCallback((id) => {
+    if (subCategoryValue === id) {
+      dispatch(setSubCategoryValue(''));
+      const existingSearchParams = Object.fromEntries(searchParams.entries());
+      delete existingSearchParams.subcategory;
+      setSearchParams(existingSearchParams);
+    } else {
+      dispatch(setSubCategoryValue(id));
+      const existingSearchParams = Object.fromEntries(searchParams.entries());
+      setSearchParams({
+        ...existingSearchParams,
+        subcategory: id,
+        page: '1', // Reset to the first page
+      });
+    }
+  }, [subCategoryValue, searchParams, dispatch, setSearchParams]);
+
+  const handleSalesCategory = useCallback((sale) => {
+    dispatch(setSalesCategory(sale));
     const existingSearchParams = Object.fromEntries(searchParams.entries());
-  
-    // Update search parameters when subcategory is selected
     setSearchParams({
       ...existingSearchParams,
-      subcategory: id,
+      sales: sale ? 'true' : '',
+      page: '1', // Reset to the first page
     });
-  };
-  
-  const handleSalesCategory = () => {
-    dispatch(setSalesCategory(true));
-  
-    // Get existing search parameters
-    const existingSearchParams = Object.fromEntries(searchParams.entries());
-  
-    // Update search parameters when sales category is selected
-    setSearchParams({
-      ...existingSearchParams,
-      sales: true,
-    });
-  };
+  }, [searchParams, dispatch, setSearchParams]);
 
   useEffect(() => {
     const updateFilterFromURL = (paramName, actionCreator) => {
@@ -83,42 +82,33 @@ const useFilterByCategory = () => {
         dispatch(actionCreator(paramValue));
       }
     };
-  
-    // const updateSearchParams = (paramName, paramValue) => {
-    //   const existingSearchParams = Object.fromEntries(searchParams.entries());
-    //   setSearchParams({
-    //     ...existingSearchParams,
-    //     [paramName]: paramValue,
-    //   });
-    // };
-  
+
     if (searchParams.has('category')) {
       updateFilterFromURL('category', setCategoryValue);
     } else {
       dispatch(setCategoryValue(''));
     }
-  
+
     if (searchParams.has('petcategory')) {
       updateFilterFromURL('petcategory', setPetCategoryValue);
     } else {
       dispatch(setPetCategoryValue(''));
     }
-  
+
     if (searchParams.has('subcategory')) {
       updateFilterFromURL('subcategory', setSubCategoryValue);
     } else {
       dispatch(setSubCategoryValue(''));
     }
-  
+
     if (searchParams.get('sales') === 'true') {
       dispatch(setSalesCategory(true));
     } else {
       dispatch(setSalesCategory(false));
     }
-  }, [searchParams]);
+  }, [searchParams, dispatch]);
 
-
-  return {handleCategory , handlePetCategory , handleSubCategory ,handleSalesCategory };
+  return { handleCategory, handlePetCategory, handleSubCategory, handleSalesCategory };
 }
 
 export default useFilterByCategory;

@@ -12,20 +12,24 @@ const useAddWishlist = ({product}) => {
 
 
   const {isLoged} = useSelector(state => state.logedUserSlice)
-  const q = isLoged ? query(collection(db, 'users'), where('id', '==', auth.currentUser.uid)) : null; // Construct query only if logged in
+  const q = isLoged && auth.currentUser?.emailVerified ? query(collection(db, 'users'), where('id', '==', auth.currentUser?.uid)) : null; // Construct query only if logged in
 
   useEffect(() => {
     if (!isLoged) return; // Exit early if user is not logged in
 
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      if (!querySnapshot.empty) {
-        const docRef = querySnapshot.docs[0];
-        const wishlist = docRef.data()?.shopWishlist || [];
-        setIsWishlisted(wishlist.includes(product.id));
-      }
-    });
+    if(q){
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        if (!querySnapshot.empty) {
+          const docRef = querySnapshot.docs[0];
+          const wishlist = docRef.data()?.shopWishlist || [];
+          setIsWishlisted(wishlist.includes(product.id));
+        }
+        return () => unsubscribe();
+      });
+    }
+  
 
-    return () => unsubscribe(); // Cleanup function to unsubscribe when the component unmounts
+     // Cleanup function to unsubscribe when the component unmounts
   }, [isLoged, q, product.id]); // Add userQuery as a dependency
 
 

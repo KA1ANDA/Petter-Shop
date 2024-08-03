@@ -7,14 +7,17 @@ import {setIsAdmin, setIsLoged, setNotification, setNotificationData, setUsers }
 import { useEffect, useState } from 'react';
 import { collection, doc, getDocs, onSnapshot, query, where } from 'firebase/firestore';
 import { current } from '@reduxjs/toolkit';
-import ChooseActivity from './Components/ChooseActivity';
 import ProfileSetUpForm from './Components/ProfileSetUpForm';
 import useGetUserInfo from './Hooks/useGetUserInfo';
 import Wishlist from './Components/shopComponents/Wishlist';
 import Footer from './Components/Footer';
 import { useLocation } from 'react-router-dom';
 import BallAnimation from './Components/BallAnimation';
-import { setCartToggle } from './Redux/Slices/shopFilterSlice';
+import { setCartToggle, setFastProductShow } from './Redux/Slices/shopFilterSlice';
+import SelectedProductInfo from './Components/shopComponents/SelectedProductInfo';
+import useGetSelectedProduct from './Hooks/ShopHooks/useGetSelectedProduct';
+import { IoPawSharp } from 'react-icons/io5';
+import Checkout from './Components/shopComponents/Checkout';
 
 
 
@@ -25,10 +28,11 @@ function App() {
   const location = useLocation();
 
   const {chooseActivityToggle , notificationData} = useSelector(state => state.logedUserSlice)
-  const {wishlistToggle} = useSelector(state => state.shopFilterSlice)
+  const {wishlistToggle, fastProductShow , checkoutToggle} = useSelector(state => state.shopFilterSlice)
 
   const [navbarFade , setNavbarFade] = useState(false)
   const [isScrolledDown, setIsScrolledDown] = useState(false);
+  
 
   onAuthStateChanged(auth,(user) => {
 
@@ -46,8 +50,15 @@ function App() {
     
   });
 
+  const [animationClass, setAnimationClass] = useState('');
 
-  
+  useEffect(() => {
+    if (fastProductShow) {
+      setAnimationClass('animate-flipInY');
+    } else {
+      setAnimationClass('');
+    }
+  }, [fastProductShow]);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(usersRef, (snapshot) => {
@@ -65,46 +76,48 @@ function App() {
   }, [dispatch]);
   
 
-  useEffect(() => {
-    if(auth.currentUser){
-      const notificationRef = query(collection(db, 'notifications'), where('recipientId', '==',  auth.currentUser.uid));
+  ///NOTIFIKACIEBIA ESS
+
+  // useEffect(() => {
+  //   if(auth.currentUser){
+  //     const notificationRef = query(collection(db, 'notifications'), where('recipientId', '==',  auth.currentUser.uid));
 
 
-      const unsubscribe = onSnapshot(notificationRef, (snapshot) => {
+  //     const unsubscribe = onSnapshot(notificationRef, (snapshot) => {
   
-      snapshot.forEach((doc) => {
-        const notificationData = doc.data();
-        // setNotifications(notificationData)
-        dispatch(setNotificationData(notificationData))
-      });
+  //     snapshot.forEach((doc) => {
+  //       const notificationData = doc.data();
+  //       // setNotifications(notificationData)
+  //       dispatch(setNotificationData(notificationData))
+  //     });
       
-    });
+  //   });
   
 
     
-    return () => unsubscribe(); // Cleanup listener on unmount
-    }
+  //   return () => unsubscribe(); // Cleanup listener on unmount
+  //   }
     
-  },[auth.currentUser])
+  // },[auth.currentUser])
 
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    if(notificationData){
-      const notification = notificationData.inbox.find((el) => el.seen===false)
+  //   if(notificationData){
+  //     const notification = notificationData.inbox.find((el) => el.seen===false)
 
 
-      if(notification){
-        dispatch(setNotification(true))
-      }else{
-        dispatch(setNotification(false))
-      }
+  //     if(notification){
+  //       dispatch(setNotification(true))
+  //     }else{
+  //       dispatch(setNotification(false))
+  //     }
   
-      console.log('pasuxi' , notification)
-    }
+  //     console.log('pasuxi' , notification)
+  //   }
     
     
-  },[notificationData])
+  // },[notificationData])
 
 
 
@@ -158,10 +171,12 @@ function App() {
 
     return () => unsubscribeAuth(); // Cleanup auth listener on unmount
   }, [dispatch]);
-  
+
 
   //unda faslebi truebad vaqcio ro dasina !!!!!!!!!!!!!
-  
+
+  const isServicesPage = location.pathname === "/Services";
+
   console.log(navbarFade)
   return (
     <div className="flex flex-col bg-white h-[100%]  font-nunito relative   " >
@@ -185,23 +200,44 @@ function App() {
           <NavBar />
         </div> */}
 
-      
-        <NavBar/>
+       <NavBar/>
+       
 
      
       
     
       <AppRouter />
-      {chooseActivityToggle && (
+
+      {/* activitys archeva */}
+      {/* {chooseActivityToggle && (
         <ChooseActivity />
-      )}
+      )} */}
+
       {wishlistToggle && (
         <Wishlist/>
       )}
 
+       {fastProductShow && (
+        <div className='fixed bg-[rgba(9,9,9,0.82)] top-0 bottom-0 left-0 right-0 z-[999] flex items-center justify-center'>
+          <div className={`card relative xl:overflow-hidden xl:flex xl:justify-center xl:items-center p-[15px] mx-[15px] 2xl:mx-0 lg:p-[50px] h-[800px]    bg-white overflow-y-auto xl:w-[1400px] rounded-standart ${animationClass}`}>
+            <div onClick={() => dispatch(setFastProductShow(false))} className='absolute top-0 right-0 m-[30px] text-[25px] font-semibold cursor-pointer bg-white rounded-[50%] py-[10px] px-[20px] z-20'>X</div>
+
+            <SelectedProductInfo />
+              <div className='hidden 2xl:block absolute -bottom-[40px] -right-[40px] rotate-[320deg] '>
+                <div className='text-primary text-[350px] relative'><IoPawSharp /></div>
+                <div className='text-secondary text-[150px] absolute bottom-6  right-[100px]'><IoPawSharp /></div>
+              </div>
+          </div>
+          
+        </div>
+      )}
+
+    {checkoutToggle && <Checkout  />}
+
+{!isServicesPage && 
       <div className='mt-[160px] w-full 2xl:w-[1400px] m-auto'> 
         <Footer />
-      </div>
+      </div> }
       
 
        

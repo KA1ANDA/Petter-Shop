@@ -3,22 +3,21 @@ import { Range } from "react-range";
 import { useDispatch, useSelector } from "react-redux";
 import { setFilterByPriceValue } from "../../Redux/Slices/shopFilterSlice";
 import { db } from "../../config/firebase";
-import { collection ,orderBy , limit, query, getDocs} from "firebase/firestore";
+import { collection, orderBy, limit, query, getDocs } from "firebase/firestore";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const PriceRangeSlider = () => {
-  const dispatch = useDispatch()
-  const productsRef = collection(db, 'products'); 
+  const dispatch = useDispatch();
+  const productsRef = collection(db, 'products');
 
   const navigate = useNavigate();
-  const [highestPrice , setHighestPrice] = useState()
-  const [highestPriceNoSizes , setHighestPriceNoSizes] = useState()
+  const [highestPrice, setHighestPrice] = useState();
+  const [highestPriceNoSizes, setHighestPriceNoSizes] = useState();
   const [highestPriceInSizes, setHighestPriceInSizes] = useState();
   const location = useLocation();
 
-  const [filteredPrices , setFilteredPrices] = useState([])
-  const {filterByPriceValue} = useSelector(state => state.shopFilterSlice)
-
+  const [filteredPrices, setFilteredPrices] = useState([]);
+  const { filterByPriceValue } = useSelector(state => state.shopFilterSlice);
 
   const q = query(productsRef, orderBy("price", "desc"), limit(1));
 
@@ -42,7 +41,6 @@ const PriceRangeSlider = () => {
           }
         });
 
-
         // FINDING HIGHEST PRICE IN PRODUCT WITHOUT SIZES
         const querySnapshot = await getDocs(q);
         const product = querySnapshot.docs[0];
@@ -58,7 +56,6 @@ const PriceRangeSlider = () => {
           dispatch(setFilterByPriceValue([0, overallHighestPrice]));
           setFilteredPrices([0, overallHighestPrice]);
         }
-      
       } catch (error) {
         console.error("Error fetching product:", error);
       }
@@ -83,7 +80,7 @@ const PriceRangeSlider = () => {
     const parsedParams = new URLSearchParams(location.search);
     const minPrice = parsedParams.get('minPrice');
     const maxPrice = parsedParams.get('maxPrice');
-  
+
     if (minPrice && maxPrice) {
       setFilteredPrices([Number(minPrice), Number(maxPrice)]);
       dispatch(setFilterByPriceValue([Number(minPrice), Number(maxPrice)]));
@@ -98,83 +95,93 @@ const PriceRangeSlider = () => {
     // Update state without dispatching to Redux yet
     setFilteredPrices(newValues);
   };
-  
+
   const handleFilterByPrice = () => {
     // Dispatch to Redux and update URL only when filtering
     dispatch(setFilterByPriceValue(filteredPrices));
-  
-    const existingSearchParams = new URLSearchParams(window.location.search);
-    existingSearchParams.set('minPrice', filteredPrices[0]);
-    existingSearchParams.set('maxPrice', filteredPrices[1]);
-    navigate(`/Shop/Products?${existingSearchParams.toString()}`);
-  };
-  return (
 
+    const existingSearchParams = new URLSearchParams(window.location.search);
+
+    if (filteredPrices[0] === 0 && filteredPrices[1] === highestPrice) {
+      existingSearchParams.delete('minPrice');
+      existingSearchParams.delete('maxPrice');
+    } else {
+      existingSearchParams.set('minPrice', filteredPrices[0]);
+      existingSearchParams.set('maxPrice', filteredPrices[1]);
+    }
+
+    navigate(`/Products?${existingSearchParams.toString()}`);
+  };
+
+  return (
     <div className="flex flex-col gap-[30px] ">
-      
-      <div className=" flex flex-col gap-[10px]">
+      <div className="flex flex-col gap-[10px]">
         {highestPrice && (
-        <Range
-          step={10}
-          min={0}
-          max={highestPrice}
-          values={filteredPrices}
-          onChange={handleChange}
-          renderTrack={({ props, children }) => (
-            <div
-              {...props}
-              style={{
-                ...props.style,
-                height: "4px",
-                width: "100%",
-                backgroundColor: "#7c58d3",
-              }}
-            >
-              {children}
-            </div>
-          )}
-          renderThumb={({ props }) => (
-            <div
-              {...props}
-              style={{
-                ...props.style,
-                height: "20px",
-                width: "20px",
-                backgroundColor: "#7c58d3",
-                borderRadius: "50%",
-                marginLeft: "-10px",
-              }}
-            />
-          )}
-        >
-          {({ filterByPriceValue }) => (
-            <>
-              <span style={{ position: "absolute", left: "calc(50% - 14px)", top: "-25px" }}>
-                {filterByPriceValue[0]}
-              </span>
-              <span style={{ position: "absolute", right: "calc(50% - 14px)", top: "-25px" }}>
-                {filterByPriceValue[1]}
-              </span>
-            </>
-          )}
-        </Range>
+          <Range
+            step={10}
+            min={0}
+            max={highestPrice}
+            values={filteredPrices}
+            onChange={handleChange}
+            renderTrack={({ props, children }) => (
+              <div
+                {...props}
+                style={{
+                  ...props.style,
+                  height: "4px",
+                  width: "100%",
+                  backgroundColor: "#7c58d3",
+                }}
+              >
+                {children}
+              </div>
+            )}
+            renderThumb={({ props }) => (
+              <div
+                {...props}
+                style={{
+                  ...props.style,
+                  height: "20px",
+                  width: "20px",
+                  backgroundColor: "#7c58d3",
+                  borderRadius: "50%",
+                  marginLeft: "-10px",
+                }}
+              />
+            )}
+          >
+            {({ filterByPriceValue }) => (
+              <>
+                <span style={{ position: "absolute", left: "calc(50% - 14px)", top: "-25px" }}>
+                  {filterByPriceValue[0]}
+                </span>
+                <span style={{ position: "absolute", right: "calc(50% - 14px)", top: "-25px" }}>
+                  {filterByPriceValue[1]}
+                </span>
+              </>
+            )}
+          </Range>
         )}
 
         <div className="flex justify-between">
-          <div className=" flex gap-[12px]"> <span className=" text-[16px] font-normal  ">From</span> <span className=" text-h5 font-bold text-primary"> ${filteredPrices[0]}</span> </div>
-          <div className=" flex gap-[12px]"> <span className=" text-[16px] font-normal ">To</span>  <span className=" text-h5 font-bold text-primary" >${filteredPrices[1]} </span> </div>
+          <div className="flex gap-[12px]">
+            <span className="text-[16px] font-normal">From</span>
+            <span className="text-h5 font-bold text-primary">${filteredPrices[0]}</span>
+          </div>
+          <div className="flex gap-[12px]">
+            <span className="text-[16px] font-normal">To</span>
+            <span className="text-h5 font-bold text-primary">${filteredPrices[1]}</span>
+          </div>
         </div>
       </div>
 
-      
-
-      
-
-
-      <div className='w-full bg-lightPrimary text-center rounded-standart py-[15px] cursor-pointer text-[16px] font-extrabold leading-[19px] simpleHover ' onClick={handleFilterByPrice}>Filter</div>
-      
+      <div
+        className="w-full bg-lightPrimary text-center rounded-standart py-[15px] cursor-pointer text-[16px] font-extrabold leading-[19px] simpleHover"
+        onClick={handleFilterByPrice}
+      >
+        Filter
+      </div>
     </div>
-    
   );
 };
 
